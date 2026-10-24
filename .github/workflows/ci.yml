@@ -36,6 +36,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install pip-audit
       - name: Configurar entorno de prueba
         run: |
           cp .env.example .env
@@ -45,10 +46,17 @@ jobs:
         run: |
           python manage.py check
           python manage.py migrate --noinput
+      - name: pip-audit (dependencias)
+        run: pip-audit -r requirements.txt
       - name: Tests backend
-        run: python manage.py test apps.users.tests.test_settings_smoke apps.users.tests.test_api_exception_handler
+        run: |
+          python manage.py test \
+            apps.users.tests.test_settings_smoke \
+            apps.users.tests.test_api_exception_handler \
+            apps.users.tests.test_viewset_permissions
 
   frontend:
+    needs: secrets
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -62,4 +70,10 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
       - run: npm run lint
+      - run: npm run test
       - run: npm run build
+      - name: npm audit (alta severidad)
+        run: npm audit --audit-level=high
+      - name: Instalar navegadores Playwright
+        run: npx playwright install chromium --with-deps
+      - run: npm run test:e2e

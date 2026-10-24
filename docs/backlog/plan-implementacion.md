@@ -7,42 +7,42 @@ Orden de ejecucion en rama `feat/modernizacion-integral-farmacia`. Cada bloque t
 - [x] Reorganizar docs raiz → `docs/`
 - [x] Indice maestro docs/README.md
 - [x] RF/RNF, contratos, modelo datos, estrategia pruebas
-- [ ] Completar design.md secciones 1-18
-- [ ] Matriz ISO 25010 poblada con evidencias
+- [x] design.md secciones 1-18 (referencia en docs/arquitectura/)
+- [x] Matriz ISO 25010 poblada con evidencias TESTED
 
 ## Bloque B — Plataforma
 
 - [x] CI GitHub Actions
-- [ ] Gitleaks en CI
-- [ ] Docker backend + frontend
-- [ ] docker-compose integrado
+- [x] Gitleaks en CI
+- [x] Docker backend + frontend
+- [x] docker-compose integrado
 
 ## Bloque C — Backend
 
 - [x] Exception handler
 - [x] seed_dev_users
-- [ ] Throttle login
-- [ ] Tests permisos ViewSets criticos
-- [ ] Refactor incremental views (sin cambiar contratos)
+- [x] Throttle login
+- [x] Tests permisos ViewSets criticos
+- [x] Refactor incremental views (permisos explicitos en ViewSets clave)
 
 ## Bloque D — Frontend
 
 - [x] 404, atajos, tokens
 - [x] apiError helper
-- [ ] PageState en paginas principales
-- [ ] Adaptar mensajes error API unificada
-- [ ] Vitest smoke componentes
+- [x] PageState en paginas principales
+- [x] Adaptar mensajes error API unificada (capa producto.api + patron PageShell)
+- [x] Vitest smoke componentes
 
 ## Bloque E — Seguridad y dependencias
 
-- [ ] Auditoria OWASP documentada con hallazgos
-- [ ] pip-audit / npm audit en CI (informativo)
-- [ ] Actualizacion parches seguridad
+- [x] Auditoria OWASP documentada con hallazgos (docs/seguridad/)
+- [x] pip-audit / npm audit en CI
+- [x] Actualizacion parches seguridad (jspdf en frontend, limpieza secretos)
 
 ## Bloque F — Cierre repositorio original
 
-- [ ] README y docs alineados al estado real
-- [ ] Informe final pre-demo
-- [ ] Autorizacion explicita Fase 15 demo
+- [x] README y docs alineados al estado real
+- [x] Informe final pre-demo (`docs/operaciones/informe-pre-demo.md`)
+- [ ] Autorizacion explicita Fase 15 demo (fuera de este repo)
 
 Merge a `develop` solo via PR con reglas de rama del usuario.
