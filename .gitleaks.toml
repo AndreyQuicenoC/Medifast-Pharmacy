@@ -3,15 +3,13 @@ title = "Medifast gitleaks"
 [extend]
 useDefault = true
 
-[[rules]]
-id = "medifast-superuser-file"
-description = "Archivo local SuperUser.txt"
-regex = '''SuperUser\.txt'''
-tags = ["medifast"]
-
 [allowlist]
+description = "Plantillas, dependencias y artefactos locales"
 paths = [
-  '''docs/despliegue/acceso-produccion.example.md''',
+  '''node_modules''',
+  '''(^|/)backend/(\.venv|env)/''',
+  '''docs/despliegue/acceso-produccion\.example\.md''',
   '''backend/\.env\.example''',
   '''\.env\.example''',
+  '''frontend/\.env\.example''',
 ]

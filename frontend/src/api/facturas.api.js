@@ -12,10 +12,6 @@ apiClient.interceptors.request.use(
   (config) => {
     const token =
       localStorage.getItem("authToken") || localStorage.getItem("token");
-    console.log(
-      "🔑 Enviando request con token:",
-      token ? `${token.substring(0, 10)}...` : "Sin token"
-    );
 
     if (token) {
       config.headers.Authorization = `Token ${token}`;

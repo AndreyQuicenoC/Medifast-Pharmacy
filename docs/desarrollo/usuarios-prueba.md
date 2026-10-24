@@ -3,7 +3,7 @@
 ## Comando
 
 ```bash
-python manage.py seed_dev_users --password "SuClaveLocalFicticia"
+python manage.py seed_dev_users --password "<definida-en-su-entorno-local>"
 ```
 
 ## Roles creados (cedulas ficticias)

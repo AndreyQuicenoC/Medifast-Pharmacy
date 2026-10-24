@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { getFacturas } from "../api/facturas.api";
+import { PageShell } from "../components/PageState";
+import { getApiErrorMessage } from "../utils/apiError";
 
 export default function Facturas() {
   const rol = localStorage.getItem("rol");
@@ -37,7 +39,7 @@ export default function Facturas() {
       setError("");
     } catch (err) {
       console.error("Error al cargar facturas:", err);
-      setError("Error al cargar las facturas. Intenta nuevamente.");
+      setError(getApiErrorMessage(err, "Error al cargar las facturas. Intenta nuevamente."));
     } finally {
       setLoading(false);
     }
@@ -89,18 +91,13 @@ export default function Facturas() {
     );
   }
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando facturas...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
+    <PageShell
+      loading={loading}
+      error={error || null}
+      onRetry={cargarFacturas}
+      loadingMessage="Cargando facturas..."
+    >
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Encabezado */}
@@ -304,5 +301,6 @@ export default function Facturas() {
         </div>
       </div>
     </div>
+    </PageShell>
   );
 }

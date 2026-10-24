@@ -172,7 +172,7 @@ El sistema utiliza **Token Authentication** de Django REST Framework.
 **Headers requeridos:**
 
 ```
-Authorization: Token your_token_here
+Authorization: Token <token-opaco-devuelto-por-authtoken>
 Content-Type: application/json
 ```
 

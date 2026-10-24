@@ -1,30 +1,37 @@
 # Changelog
 
-Formato inspirado en Keep a Changelog. Versionado semantico cuando aplique.
+Formato [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/). Versionado [SemVer](https://semver.org/lang/es/).
 
-## [Unreleased]
+## [2.0.0] — 2026-10-24
+
+Modernizacion integral VEXARQ: arquitectura por dominios, calidad en CI, seguridad y documentacion transversal.
 
 ### Anadido
 
-- Backend profesional VEXARQ: `config/`, dominios `identity`/`catalog`/`operations`, `tests/` modular, `scripts/`, Makefile y pipeline CI (ruff, pytest+cobertura, bandit, radon, interrogate)
-- Documentacion transversal en `docs/` (indice, RF/RNF, pruebas, seguridad, accesibilidad, despliegue)
-- Reorganizacion: despliegue y funcionalidades movidas desde raiz; eliminado SuperUser.txt del repo
-- CONTRIBUTING.md, Dockerfiles, gitleaks CI, throttle login, PageState, apiError
-- Matrices ISO 25010 y VEXARQ; plan de implementacion por bloques
+- Backend: `config/`, apps `identity` / `catalog` / `operations`, `tests/` modular, `scripts/`, `Makefile`, pipeline CI (ruff, pytest+cobertura, bandit, radon, interrogate, pip-audit)
+- Frontend: `PageShell`, `apiError`, Vitest, Playwright smoke, dependencias de build corregidas (jspdf)
+- Documentacion en `docs/` (RF/RNF, ISO 25010, VEXARQ, diseno, operaciones, informe pre-demo)
+- CI: gitleaks, Docker, docker-compose, CONTRIBUTING, pagina `/proyecto`, 404, atajos de teclado
+- Matrices de trazabilidad y plan de implementacion por bloques
 
-### Anadido (oleada anterior)
+### Cambiado
 
-- Modernizacion Fase 2+: CI, docker-compose PG, handler errores API, seed_dev_users
-- Pagina 404, atajos de teclado, tokens de diseno, pagina /proyecto
-- README raiz profesional
+- Renombrado proyecto Django `DS1` → `config`; rutas de scripts y despliegue (`render.yaml`, Gunicorn)
+- Usuarios de desarrollo: `seed_dev_users --password` obligatorio; scripts con `MEDIFAST_DEV_PASSWORD`
+- Documentacion de despliegue Render sin credenciales embebidas
 
 ### Corregido
 
-- Endurecimiento seguridad backend: DB_PASSWORD obligatorio, sin SQLite en prod, registro sin fuga de excepciones, ruta debug `test_auth` eliminada
-- create_test_admin: campo `rol` en lugar de `rol_simple` inexistente
+- Gitleaks: eliminacion de secretos en docs, regla custom defectuosa, allowlist de plantillas
+- Seguridad: permisos API, estadisticas autenticadas, registro sin fuga de excepciones, `DB_PASSWORD` obligatorio fuera de SQLite
+- Build frontend en CI; npm audit en dependencias criticas
+
+### Seguridad
+
+- Rotar credenciales si estuvieron expuestas en documentacion historica (ver [SECURITY.md](SECURITY.md))
 
 ## [1.0.0-base] — 2026-10-23
 
 ### Anadido
 
-- Commit base unificado post-estabilizacion Fase 1
+- Commit base unificado post-estabilizacion Fase 1 del proyecto academico original

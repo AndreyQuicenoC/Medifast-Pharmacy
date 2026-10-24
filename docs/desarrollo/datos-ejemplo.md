@@ -1,158 +1,41 @@
-# 📋 Scripts de Datos de Prueba - Farmacia Django React
+# Scripts de datos de prueba
 
-Este directorio contiene scripts para gestionar y recrear los datos de la base de datos del sistema.
+Scripts en `backend/scripts/dev/` para poblar entornos **locales**. No usar en producción.
 
-## 📁 Archivos Incluidos
+## Requisito de seguridad
 
-### `script_datosdeprueba.py`
+Exporte una contraseña ficticia antes de ejecutar scripts que crean usuarios:
 
-Script principal que contiene todos los datos actuales de la base de datos en formato ejecutable.
-
-- **Generado automáticamente** desde la base de datos actual
-- Contiene **todos los datos** (usuarios, productos, servicios, etc.)
-- **Transaccional**: Si falla, no se aplican cambios parciales
-
-### `test_script_datos.py`
-
-Script de prueba que permite ejecutar `script_datosdeprueba.py` de forma segura.
-
-- Hace **backup automático** de la BD actual
-- Permite **restaurar** si algo sale mal
-- **Modo interactivo** para confirmar cambios
-
-## 🚀 Uso de los Scripts
-
-### Opción 1: Ejecución Directa
-
-```bash
-# Ejecutar directamente el script de datos
-python script_datosdeprueba.py
+```powershell
+$env:MEDIFAST_DEV_PASSWORD = "<definida-en-su-entorno-local>"
 ```
 
-### Opción 2: Ejecución Segura (Recomendada)
+## Archivos
+
+| Script | Uso |
+|--------|-----|
+| `script_datosdeprueba.py` | Carga masiva transaccional |
+| `test_script_datos.py` | Backup SQLite + prueba del script anterior |
+| `clean_database.py` | Limpieza local |
+| `create_test_admin.py` | Admin único de prueba |
+| `crear_clientes.py` | Clientes de ejemplo |
+
+Ejecutar desde `backend/`:
 
 ```bash
-# Ejecutar con backup automático y opción de rollback
-python test_script_datos.py
+python scripts/dev/script_datosdeprueba.py
 ```
 
-### Opción 3: Limpiar y Recrear
+## Usuarios de desarrollo recomendados
+
+Preferir el comando oficial idempotente:
 
 ```bash
-# Limpiar base de datos y recrear con datos de prueba
-python clean_database.py
-python script_datosdeprueba.py
+python manage.py seed_dev_users --password "<definida-en-su-entorno-local>"
 ```
 
-## 📊 Datos Incluidos
+Ver [usuarios-prueba.md](./usuarios-prueba.md).
 
-El script `script_datosdeprueba.py` recrea:
+## Tokens de autenticación
 
-- **3 Roles** (cliente, empleado, administrador)
-- **35 Usuarios** con diferentes roles y permisos
-- **26 Clientes** con datos completos
-- **22 Productos** con precios, stock y detalles
-- **14 Servicios** de farmacia disponibles
-- **5 Cajas** registradoras configuradas
-- **16 Tokens** de autenticación activos
-
-## 🔧 Regenerar Script de Datos
-
-Si necesitas actualizar el script con nuevos datos de la BD actual:
-
-```bash
-# Ejecutar el generador (crear script actualizado)
-python generar_script_datos.py
-```
-
-Este comando:
-
-1. Lee todos los datos actuales de la BD
-2. Genera un nuevo `script_datosdeprueba.py`
-3. Mantiene la estructura y formato correcto
-
-## ⚠️ Consideraciones Importantes
-
-### Antes de Ejecutar
-
-- **Hacer backup manual** de `db.sqlite3` si contiene datos importantes
-- Verificar que las **migraciones estén actualizadas**
-- Comprobar que el **entorno virtual esté activo**
-
-### Durante la Ejecución
-
-- El script usa **transacciones**, por lo que es seguro
-- Si hay errores, **no se aplicarán cambios parciales**
-- Los **passwords por defecto** son `123456`
-
-### Después de Ejecutar
-
-- Verificar que todos los datos se hayan creado correctamente
-- Probar el **login con usuarios creados**
-- Revisar que los **tokens de autenticación** funcionen
-
-## 🏥 Usuarios de Prueba Incluidos
-
-El script crea usuarios con diferentes roles:
-
-### Administradores
-
-- Email: `admin@test.com`
-- Password: `123456`
-- Rol: `administrador`
-
-### Empleados
-
-- Varios empleados con diferentes especialidades
-- Password: `123456`
-- Rol: `empleado`
-
-### Clientes
-
-- Clientes con datos de ejemplo
-- Algunos marcados como prioritarios
-- Rol: `cliente`
-
-## 🔐 Tokens de Autenticación
-
-El script incluye tokens pre-generados para:
-
-- **API testing** inmediato
-- **Desarrollo frontend** sin necesidad de login
-- **Testing automatizado** de endpoints
-
-## 📝 Logs y Debugging
-
-### Verificar Datos Creados
-
-```bash
-# Ver resumen de datos en la BD
-python manage.py shell -c "
-from apps.identity.models import User, Cliente, Rol
-from apps.catalog.models import Producto
-from apps.operations.models import Servicio, Caja
-print(f'Usuarios: {User.objects.count()}')
-print(f'Clientes: {Cliente.objects.count()}')
-print(f'Productos: {Producto.objects.count()}')
-print(f'Servicios: {Servicio.objects.count()}')
-print(f'Cajas: {Caja.objects.count()}')
-"
-```
-
-### Testing API con Datos
-
-```bash
-# Probar endpoint con usuario creado
-curl -H "Authorization: Token [token_from_script]" http://localhost:8000/api/products/
-```
-
-## 🔄 Workflow Recomendado
-
-1. **Desarrollo**: Usar `script_datosdeprueba.py` para datos consistentes
-2. **Testing**: Ejecutar con `test_script_datos.py` para seguridad
-3. **Production**: **NUNCA** ejecutar estos scripts en producción
-4. **Backup**: Siempre hacer backup antes de cambios importantes
-
----
-
-**💡 Tip**: Estos scripts son ideales para **desarrollo** y **testing**. Para producción, usar fixtures o migraciones de datos apropiadas.
+Los tokens se generan en runtime al crear usuarios; no se versionan claves opacas en el repositorio.

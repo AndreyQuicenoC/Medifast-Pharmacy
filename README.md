@@ -1,18 +1,25 @@
 # Medifast Pharmacy
 
+[![CI](https://github.com/AndreyQuicenoC/Medifast-Pharmacy/actions/workflows/ci.yml/badge.svg)](https://github.com/AndreyQuicenoC/Medifast-Pharmacy/actions/workflows/ci.yml)
+[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
+![Python 3.13](https://img.shields.io/badge/Python-3.13-blue.svg)
+![Node 20](https://img.shields.io/badge/Node-20-green.svg)
+![Django 5.1](https://img.shields.io/badge/Django-5.1-darkgreen.svg)
+![React 19](https://img.shields.io/badge/React-19-61dafb.svg)
+
 Sistema de gestion para farmacia (turnos, cajas, productos, facturas, estadisticas) con backend **Django REST** y frontend **React**.
 
-## Origen y evolucion del proyecto
+**Version actual:** [2.0.0](CHANGELOG.md) — modernizacion individual por [@AndreyQuicenoC](https://github.com/AndreyQuicenoC).
 
-Esta aplicacion fue desarrollada originalmente como proyecto academico en equipo para el curso Desarrollo de Software I. Sus integrantes originales fueron Francesco Garcia Vargas, Jonathan Aristizabal, Diego Espinosa, Adolfo Andrey Quiceno, Miguel Casanova, Diego Armado Espinosa y Jose Daniel Trujillo Suarez.
+## Origen del proyecto
 
-La version actual corresponde a una modernizacion individual realizada por Andrey Quiceno ([@AndreyQuicenoC](https://github.com/AndreyQuicenoC)), orientada a calidad, arquitectura, seguridad, accesibilidad, pruebas, documentacion y DevOps. La modernizacion no implica que los integrantes originales hayan participado en los cambios posteriores.
+Proyecto academico original (Desarrollo de Software I). La version 2.x es una modernizacion individual orientada a calidad, seguridad, pruebas, accesibilidad y DevOps; los autores originales no participaron en esta oleada.
 
 ## Requisitos
 
-- Python **3.13** (recomendado)
+- Python **3.13**
 - Node.js **20+**
-- PostgreSQL (produccion) o SQLite (local con `USE_SQLITE=True`)
+- PostgreSQL (produccion) o SQLite (`USE_SQLITE=True` en `backend/.env`)
 
 ## Instalacion rapida (local)
 
@@ -22,11 +29,13 @@ La version actual corresponde a una modernizacion individual realizada por Andre
 cd backend
 copy .env.example .env
 py -3.13 -m venv .venv
-.\.venv\Scripts\pip install -r requirements.txt
+.\.venv\Scripts\pip install -r requirements-dev.txt
 .\.venv\Scripts\python manage.py migrate
-.\.venv\Scripts\python manage.py seed_dev_users
+.\.venv\Scripts\python manage.py seed_dev_users --password "<local-only>"
 .\.venv\Scripts\python manage.py runserver
 ```
+
+Calidad backend: `make quality` (Linux/macOS) o `.\scripts\quality.ps1` (Windows).
 
 ### Frontend
 
@@ -37,7 +46,7 @@ npm ci
 npm run dev
 ```
 
-API por defecto: `http://localhost:8000/api` (variable `VITE_API_BASE_URL`).
+API por defecto: `http://localhost:8000/api` (`VITE_API_BASE_URL`).
 
 ### Validacion integrada
 
@@ -45,27 +54,25 @@ API por defecto: `http://localhost:8000/api` (variable `VITE_API_BASE_URL`).
 .\scripts\validate-local.ps1
 ```
 
-## Usuarios de desarrollo
-
-Comando: `python manage.py seed_dev_users` (solo entorno local). Documentacion detallada en `docs/desarrollo/usuarios-prueba.md`. **No** publique contrasenas de desarrollo en produccion.
-
 ## Documentacion
 
-Indice completo: **[docs/README.md](docs/README.md)** (arquitectura, requisitos, pruebas, seguridad, despliegue, diseno, VEXARQ).
-
-En la raiz solo: [CHANGELOG.md](CHANGELOG.md), [SECURITY.md](SECURITY.md), [LICENSE](LICENSE), [CONTRIBUTING.md](CONTRIBUTING.md).
+- Indice: **[docs/README.md](docs/README.md)**
+- Backend: [backend/docs/STRUCTURE.md](backend/docs/STRUCTURE.md)
+- Frontend: [frontend/docs/STRUCTURE.md](frontend/docs/STRUCTURE.md)
+- Usuarios dev: [docs/desarrollo/usuarios-prueba.md](docs/desarrollo/usuarios-prueba.md)
 
 ## CI/CD
 
-GitHub Actions: `.github/workflows/ci.yml` (lint, build frontend; check, migrate, tests backend).
+GitHub Actions (`.github/workflows/ci.yml`): gitleaks, backend (lint, tests, cobertura, bandit, audits), frontend (lint, vitest, build, npm audit, Playwright).
 
 ## PostgreSQL opcional (Docker)
 
 ```powershell
+copy .env.example .env   # raiz: POSTGRES_PASSWORD
 docker compose up -d db
 ```
 
-Configure `USE_SQLITE=False` y variables `DB_*` en `backend/.env`.
+Configure `USE_SQLITE=False` y `DB_*` en `backend/.env`.
 
 ## Licencia
 
