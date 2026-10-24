@@ -1,1 +1,39 @@
 @import "tailwindcss";
+
+:root {
+  --color-primary: #166534;
+  --color-primary-hover: #14532d;
+  --color-accent: #ca8a04;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f3f4f6;
+  --color-text: #111827;
+  --color-text-muted: #4b5563;
+  --color-border: #d1d5db;
+  --color-danger: #b91c1c;
+  --color-success: #15803d;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --shadow-card: 0 4px 14px rgb(0 0 0 / 8%);
+  --font-sans: "Segoe UI", system-ui, sans-serif;
+  --space-page: 1.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-text);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}

@@ -1,4 +1,4 @@
-import React from "react";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
@@ -9,9 +9,14 @@ export default function Footer() {
           <h3 className="text-xl font-bold">Enlaces</h3>
           <ul className="mt-2 space-y-1 px-3">
             <li>
-              <a href="#" className="hover:text-yellow-200">
+              <Link to="/login" className="hover:text-yellow-200">
                 - Inicio
-              </a>
+              </Link>
+            </li>
+            <li>
+              <Link to="/proyecto" className="hover:text-yellow-200">
+                - Acerca del proyecto
+              </Link>
             </li>
             <li>
               <a href="#" className="hover:text-yellow-200">

@@ -1,4 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useCallback } from "react";
+import PageNotFound from "./pages/PageNotFound";
+import Proyecto from "./pages/Proyecto";
+import KeyboardShortcutsHelp from "./components/KeyboardShortcutsHelp";
+import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import fondoClaro from "./assets/FondoClaro.jpg";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -18,6 +23,11 @@ import Producto from "./pages/producto";
 import { Toaster } from "react-hot-toast";
 
 function App() {
+  const focusMain = useCallback(() => {
+    document.getElementById("main-content")?.focus();
+  }, []);
+  const { helpOpen, setHelpOpen } = useKeyboardShortcuts({ onFocusMain: focusMain });
+
   return (
     <div
       className="min-h-screen bg-gray-300 flex flex-col bg-cover bg-center bg-no-repeat"
@@ -26,6 +36,7 @@ function App() {
       <BrowserRouter>
         <Header />
 
+        <KeyboardShortcutsHelp open={helpOpen} onClose={() => setHelpOpen(false)} />
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
@@ -42,6 +53,8 @@ function App() {
           <Route path="/turno" element={<Turno />} />
           <Route path="/cajero" element={<Cajero />} />
           <Route path="/producto" element={<Producto />} />
+          <Route path="/proyecto" element={<Proyecto />} />
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
         <Toaster />
         <Footer />

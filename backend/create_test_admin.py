@@ -29,7 +29,7 @@ def create_test_admin():
             last_name='Test',
             email='admin@test.com',
             phone_number='1234567890',
-            rol_simple='administrador',
+            rol='administrador',
             is_staff=True,
             is_active=True,
             dob=date(1990, 1, 1)  # Fecha de nacimiento por defecto

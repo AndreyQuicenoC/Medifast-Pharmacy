@@ -1,0 +1,53 @@
+name: CI Medifast Pharmacy
+
+on:
+  push:
+    branches: [develop, main, "feat/**"]
+  pull_request:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Configurar entorno de prueba
+        run: |
+          cp .env.example .env
+          echo "USE_SQLITE=True" >> .env
+          echo "DEBUG=True" >> .env
+      - name: Django check y migraciones
+        run: |
+          python manage.py check
+          python manage.py migrate --noinput
+      - name: Tests backend
+        run: python manage.py test apps.users.tests.test_settings_smoke apps.users.tests.test_api_exception_handler
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build

@@ -191,6 +191,10 @@ CORS_ALLOWED_ORIGINS = [
     'https://farmacia-medifast.onrender.com',  # Backend URL para testing
 ]
 
+_frontend_url = os.getenv('FRONTEND_URL', '').strip()
+if _frontend_url and _frontend_url not in CORS_ALLOWED_ORIGINS:
+    CORS_ALLOWED_ORIGINS.append(_frontend_url)
+
 # Para manejar patrones con wildcards en Vercel
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://.*\.vercel\.app$",  # Cualquier subdominio de vercel.app
@@ -249,7 +253,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20
+    'PAGE_SIZE': 20,
+    'EXCEPTION_HANDLER': 'DS1.exceptions.api_exception_handler',
 }
 
 # Logging configuration
