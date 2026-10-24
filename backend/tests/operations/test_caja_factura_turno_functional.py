@@ -1,13 +1,13 @@
 import json
 from decimal import Decimal
 
+from apps.identity.models import Cliente
+from apps.operations.models import Caja, Factura, Horario, Servicio, Turno
 from django.test import TestCase
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from apps.identity.models import Cliente
-from apps.operations.models import Caja, Factura, Horario, Servicio, Turno
 from tests.support.factories import auth_headers_for, create_user_with_password
 
 

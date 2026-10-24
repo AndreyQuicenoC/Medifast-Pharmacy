@@ -2,6 +2,7 @@
 """
 Crea el primer superusuario usando variables de entorno (post-despliegue).
 """
+
 import os
 from datetime import datetime
 
@@ -22,9 +23,7 @@ if __name__ == "__main__":
     required = ("ADMIN_CC", "ADMIN_EMAIL", "ADMIN_PASSWORD", "ADMIN_PHONE")
     missing = [name for name in required if not os.environ.get(name)]
     if missing:
-        raise SystemExit(
-            "Defina variables de entorno: " + ", ".join(missing)
-        )
+        raise SystemExit("Defina variables de entorno: " + ", ".join(missing))
 
     User.objects.create_superuser(
         cc=os.environ["ADMIN_CC"],

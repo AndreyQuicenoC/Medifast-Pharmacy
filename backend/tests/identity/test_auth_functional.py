@@ -1,10 +1,10 @@
 import secrets
 
+from apps.identity.models import Cliente, User
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from apps.identity.models import Cliente, User
 from tests.support.factories import create_user_with_password
 
 

@@ -2,14 +2,13 @@
 Crea usuarios ficticios de desarrollo por rol (cliente, empleado, administrador).
 Idempotente: no sobrescribe usuarios existentes con la misma cedula (cc).
 """
+
 from datetime import date, datetime
 
-from django.core.management.base import BaseCommand
-from django.utils import timezone
-from django.db import transaction
-
 from apps.identity.models import Administrador, Cliente, Empleado, User
-
+from django.core.management.base import BaseCommand
+from django.db import transaction
+from django.utils import timezone
 
 DEV_USERS = [
     {
@@ -80,17 +79,13 @@ class Command(BaseCommand):
             if spec["profile"] == "administrador":
                 Administrador.objects.create(ID_Usuario=user)
             elif spec["profile"] == "empleado":
-                Empleado.objects.create(
-                    ID_Usuario=user, Fecha_contratacion=date(2024, 1, 10)
-                )
+                Empleado.objects.create(ID_Usuario=user, Fecha_contratacion=date(2024, 1, 10))
             elif spec["profile"] == "cliente":
                 Cliente.objects.create(ID_Usuario=user, prioritario=False)
 
             created += 1
             self.stdout.write(
-                self.style.SUCCESS(
-                    f"Creado {spec['rol']}: cc={spec['cc']} email={spec['email']}"
-                )
+                self.style.SUCCESS(f"Creado {spec['rol']}: cc={spec['cc']} email={spec['email']}")
             )
 
         self.stdout.write(

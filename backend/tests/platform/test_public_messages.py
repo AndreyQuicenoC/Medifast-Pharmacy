@@ -1,7 +1,6 @@
+from config.exceptions import _public_message
 from django.test import SimpleTestCase
 from rest_framework import status
-
-from config.exceptions import _public_message
 
 
 class PublicMessageTests(SimpleTestCase):

@@ -1,12 +1,11 @@
 import os
 import secrets
 
-from django.core.management import call_command
-from django.test import TestCase
-
 from apps.catalog.models import Producto
 from apps.identity.models import User
 from apps.operations.models import Factura, Turno
+from django.core.management import call_command
+from django.test import TestCase
 
 
 class SeedDemoShowcaseCommandTests(TestCase):

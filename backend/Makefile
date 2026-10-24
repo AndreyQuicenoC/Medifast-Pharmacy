@@ -1,4 +1,4 @@
-.PHONY: install install-dev lint format test coverage security complexity docs quality ci
+.PHONY: install install-dev lint format test coverage security complexity docs ci quality
 
 install:
 	python -m pip install --upgrade pip
@@ -19,7 +19,7 @@ test:
 	pytest
 
 coverage:
-	pytest --cov=apps --cov=config --cov-report=term-missing --cov-fail-under=55
+	pytest --cov=apps --cov=config --cov-report=term-missing --cov-fail-under=68
 
 security:
 	bandit -r apps config -c pyproject.toml -x apps/operations/views.py -x apps/identity/views.py -x apps/operations/estadisticas_views.py
@@ -31,8 +31,10 @@ complexity:
 docs:
 	interrogate apps config -c pyproject.toml
 
-quality: lint test coverage security complexity docs
-
-ci: quality
+django-check:
 	python manage.py check
 	python manage.py migrate --noinput
+
+quality: lint django-check test coverage security complexity docs
+
+ci: quality

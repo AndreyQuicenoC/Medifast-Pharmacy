@@ -1,8 +1,7 @@
+from config.exceptions import _public_message, api_exception_handler
 from django.test import TestCase
 from rest_framework.exceptions import NotFound, PermissionDenied, ValidationError
 from rest_framework.test import APIRequestFactory
-
-from config.exceptions import _public_message, api_exception_handler
 
 
 class ApiExceptionHandlerTests(TestCase):

@@ -7,17 +7,16 @@ from __future__ import annotations
 
 import json
 import os
-import random
+import secrets
 from datetime import datetime, timedelta
 from decimal import Decimal
-
-from django.core.management.base import BaseCommand
-from django.db import transaction
-from django.utils import timezone
 
 from apps.catalog.models import Producto
 from apps.identity.models import Administrador, Cliente, Empleado, User
 from apps.operations.models import Caja, Factura, Horario, Servicio, Turno
+from django.core.management.base import BaseCommand
+from django.db import transaction
+from django.utils import timezone
 
 DEMO_USERS = [
     (910900001, "administrador", "Sofia", "Rios", "admin.demo@medifast.demo"),
@@ -196,11 +195,9 @@ class Command(BaseCommand):
                     "cantidad": 1 + (turno.id or 0) % 3,
                     "precio_unitario": p.Precio,
                 }
-                for p in random.sample(productos, min(3, len(productos)))
+                for p in secrets.SystemRandom().sample(productos, min(3, len(productos)))
             ]
-            total = sum(
-                Decimal(str(x["precio_unitario"])) * x["cantidad"] for x in lineas
-            )
+            total = sum(Decimal(str(x["precio_unitario"])) * x["cantidad"] for x in lineas)
             Factura.objects.create(
                 ID_Turno=turno,
                 Total=total,
@@ -210,6 +207,6 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.SUCCESS(
-                "Demo showcase cargado: usuarios 910900001-910900012, 90 productos, 52 turnos y facturas."
+                "Demo showcase: usuarios 910900001-910900012, 90 productos, 52 turnos y facturas."
             )
         )

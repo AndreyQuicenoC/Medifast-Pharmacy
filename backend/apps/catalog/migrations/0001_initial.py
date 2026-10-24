@@ -4,29 +4,32 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Producto',
+            name="Producto",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('Nombre', models.CharField(max_length=100)),
-                ('Presentacion', models.TextField()),
-                ('Descripcion', models.TextField()),
-                ('Tipo', models.CharField(max_length=50)),
-                ('Precio', models.IntegerField()),
-                ('Descuento', models.IntegerField(default=0)),
-                ('Stock', models.IntegerField()),
-                ('Marca', models.CharField(max_length=200)),
-                ('Activo', models.BooleanField(default=True)),
-                ('requiere_orden_medica', models.BooleanField(default=False)),
-                ('Codigo', models.CharField(blank=True, max_length=50, null=True)),
-                ('Fecha_vencimiento', models.DateField(blank=True, null=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("Nombre", models.CharField(max_length=100)),
+                ("Presentacion", models.TextField()),
+                ("Descripcion", models.TextField()),
+                ("Tipo", models.CharField(max_length=50)),
+                ("Precio", models.IntegerField()),
+                ("Descuento", models.IntegerField(default=0)),
+                ("Stock", models.IntegerField()),
+                ("Marca", models.CharField(max_length=200)),
+                ("Activo", models.BooleanField(default=True)),
+                ("requiere_orden_medica", models.BooleanField(default=False)),
+                ("Codigo", models.CharField(blank=True, max_length=50, null=True)),
+                ("Fecha_vencimiento", models.DateField(blank=True, null=True)),
             ],
         ),
     ]

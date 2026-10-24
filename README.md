@@ -4,7 +4,7 @@
 [![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
 ![Python 3.13](https://img.shields.io/badge/Python-3.13-blue.svg)
 ![Node 20](https://img.shields.io/badge/Node-20-green.svg)
-![Django 5.1](https://img.shields.io/badge/Django-5.1-darkgreen.svg)
+![Django 5.2](https://img.shields.io/badge/Django-5.2-darkgreen.svg)
 ![React 19](https://img.shields.io/badge/React-19-61dafb.svg)
 
 Sistema de gestion para farmacia (turnos, cajas, productos, facturas, estadisticas) con backend **Django REST** y frontend **React**.

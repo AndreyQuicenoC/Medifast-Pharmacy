@@ -6,49 +6,79 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('tickets', '0001_initial'),
-        ('users', '0001_initial'),
+        ("tickets", "0001_initial"),
+        ("users", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='caja',
-            name='ID_Usuario',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL),
+            model_name="caja",
+            name="ID_Usuario",
+            field=models.OneToOneField(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
-            model_name='turno',
-            name='ID_Caja',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='tickets.caja'),
+            model_name="turno",
+            name="ID_Caja",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="tickets.caja",
+            ),
         ),
         migrations.AddField(
-            model_name='turno',
-            name='ID_Cliente',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.SET_DEFAULT, to='users.cliente'),
+            model_name="turno",
+            name="ID_Cliente",
+            field=models.ForeignKey(
+                default=1, on_delete=django.db.models.deletion.SET_DEFAULT, to="users.cliente"
+            ),
         ),
         migrations.AddField(
-            model_name='turno',
-            name='ID_Horario',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='tickets.horario'),
+            model_name="turno",
+            name="ID_Horario",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="tickets.horario",
+            ),
         ),
         migrations.AddField(
-            model_name='turno',
-            name='ID_Servicio',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.SET_DEFAULT, to='tickets.servicio'),
+            model_name="turno",
+            name="ID_Servicio",
+            field=models.ForeignKey(
+                default=1, on_delete=django.db.models.deletion.SET_DEFAULT, to="tickets.servicio"
+            ),
         ),
         migrations.AddField(
-            model_name='factura',
-            name='ID_Turno',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='facturas', to='tickets.turno'),
+            model_name="factura",
+            name="ID_Turno",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="facturas",
+                to="tickets.turno",
+            ),
         ),
         migrations.AddField(
-            model_name='factura',
-            name='Turno',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='facturas_old', to='tickets.turno'),
+            model_name="factura",
+            name="Turno",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="facturas_old",
+                to="tickets.turno",
+            ),
         ),
     ]

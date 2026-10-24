@@ -5,9 +5,8 @@ from __future__ import annotations
 import secrets
 from datetime import datetime
 
-from django.utils import timezone
-
 from apps.identity.models import Administrador, Cliente, Empleado, User
+from django.utils import timezone
 
 
 def _unique_cc() -> int:

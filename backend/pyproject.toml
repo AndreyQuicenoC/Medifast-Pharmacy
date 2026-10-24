@@ -44,6 +44,7 @@ ignore = ["S101", "S105", "S106"]
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["S101"]
 "scripts/**/*.py" = ["S603", "S607"]
+"**/migrations/*.py" = ["E501"]
 
 [tool.ruff.format]
 quote-style = "double"
