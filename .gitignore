@@ -1,7 +1,10 @@
 # Backend Python
 backend/env/
+backend/.venv/
 backend/__pycache__/
+**/__pycache__/
 backend/*.pyc
+backend/db.sqlite3
 backend/*.pyo
 backend/*.db
 backend/.env
@@ -11,6 +14,8 @@ backend/media/
 # Frontend Node
 frontend/node_modules/
 frontend/dist/
+frontend/.env
+frontend/.env.production
 frontend/.env.local
 frontend/.env.development.local
 frontend/.env.test.local
@@ -63,6 +68,7 @@ jspm_packages/
 # dotenv environment variables file
 .env
 .env.test
+CREDENCIALES-PRODUCCION.md
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache

@@ -6,23 +6,30 @@
 Write-Host "🚀 Instalando dependencias del backend..." -ForegroundColor Green
 
 # Verificar si Python está instalado
+$pythonCmd = "py -3.13"
 try {
-    $pythonVersion = python --version 2>&1
-    Write-Host "✅ Python encontrado: $pythonVersion" -ForegroundColor Green
+    $pythonVersion = & py -3.13 --version 2>&1
+    Write-Host "Python encontrado: $pythonVersion" -ForegroundColor Green
 } catch {
-    Write-Host "❌ Error: Python no está instalado" -ForegroundColor Red
-    exit 1
+    $pythonCmd = "python"
+    $pythonVersion = python --version 2>&1
+    Write-Host "Python encontrado: $pythonVersion" -ForegroundColor Green
+}
+
+if (!(Test-Path ".env")) {
+    Copy-Item ".env.example" ".env"
+    Write-Host "Archivo .env creado desde .env.example" -ForegroundColor Yellow
 }
 
 # Crear entorno virtual si no existe
-if (!(Test-Path "env")) {
-    Write-Host "📦 Creando entorno virtual..." -ForegroundColor Yellow
-    python -m venv env
+if (!(Test-Path ".venv")) {
+    Write-Host "Creando entorno virtual..." -ForegroundColor Yellow
+    Invoke-Expression "$pythonCmd -m venv .venv"
 }
 
 # Activar entorno virtual
-Write-Host "🔧 Activando entorno virtual..." -ForegroundColor Yellow
-& "env\Scripts\Activate.ps1"
+Write-Host "Activando entorno virtual..." -ForegroundColor Yellow
+& ".venv\Scripts\Activate.ps1"
 
 # Actualizar pip
 Write-Host "📋 Actualizando pip..." -ForegroundColor Yellow

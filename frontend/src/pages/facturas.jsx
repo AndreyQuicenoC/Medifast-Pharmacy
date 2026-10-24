@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getFacturas, getAllFacturas } from "../api/facturas.api";
+import { getFacturas } from "../api/facturas.api";
 
 export default function Facturas() {
   const rol = localStorage.getItem("rol");

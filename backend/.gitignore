@@ -14,6 +14,7 @@ media/
 
 # Virtual Environment
 env/
+.venv/
 venv/
 ENV/
 env.bak/

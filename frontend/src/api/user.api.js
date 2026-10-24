@@ -234,11 +234,7 @@ export const CreateUserByRole = async (userData) => {
 };
 
 // Actualizar usuario y manejar cambio de rol
-export const UpdateUserWithRoleChange = async (
-  userId,
-  userData,
-  currentEndpoint
-) => {
+export const UpdateUserWithRoleChange = async (userId, userData) => {
   try {
     const headers = getAuthHeaders();
 
@@ -285,11 +281,7 @@ export const UpdateUserWithRoleChange = async (
 };
 
 // Actualizar usuario manteniendo múltiples roles (comportamiento anterior)
-export const UpdateUserKeepingMultipleRoles = async (
-  userId,
-  userData,
-  currentEndpoint
-) => {
+export const UpdateUserKeepingMultipleRoles = async (userId, userData) => {
   try {
     const headers = getAuthHeaders();
 
@@ -335,7 +327,7 @@ export const UpdateUserKeepingMultipleRoles = async (
 };
 
 // Eliminar usuario del endpoint de USERS
-export const DeleteUserFromEndpoint = async (userId, endpoint) => {
+export const DeleteUserFromEndpoint = async (userId) => {
   try {
     const headers = getAuthHeaders();
 
