@@ -1,7 +1,0 @@
-Con esto inicializan el contenedor con la base de datos:
-sudo docker run --name farmaciaDS1 -e POSTGRES_USER=totti -e POSTGRES_PASSWORD=pinito -p 5432:5432 postgres:latest
-
-Con esto ingresan al contenedor:
-sudo docker exec -it farmaciaDS1 psql -U totti
-
-Y lo demás lo googlean :)

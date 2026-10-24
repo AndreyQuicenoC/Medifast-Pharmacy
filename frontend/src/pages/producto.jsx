@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
+import { PageShell } from "../components/PageState";
 import {
   TIPOS_MEDICAMENTOS,
   fetchProductos,
@@ -9,9 +10,15 @@ import {
   activarProducto,
   formatPrice,
 } from "../api/producto.api";
+import { useConfirm } from "../components/ConfirmProvider";
+import { notify } from "../utils/notify";
+import AdminPageLayout from "../components/AdminPageLayout";
+import ActionIconButton from "../components/ActionIconButton";
+import Tooltip from "../components/Tooltip";
 
 export default function ProductosManagement() {
   const navigate = useNavigate();
+  const confirm = useConfirm();
 
   // Estado para autenticación
   const [token, setToken] = useState(null);
@@ -162,7 +169,7 @@ export default function ProductosManagement() {
 
     // Validación básica
     if (!formData.Nombre || !formData.Marca || !formData.Tipo) {
-      alert("Por favor complete los campos obligatorios");
+      notify.error("Por favor complete los campos obligatorios");
       return;
     }
 
@@ -173,8 +180,8 @@ export default function ProductosManagement() {
 
       // Validar que el stock no sea negativo
       if (stockFinal < 0) {
-        alert(
-          `No se puede reducir el stock por debajo de 0. Stock actual: ${stockOriginal}, intentando reducir: ${stockDisminucion}`
+        notify.error(
+          `No se puede reducir el stock por debajo de 0. Stock actual: ${stockOriginal}, intentando reducir: ${stockDisminucion}`,
         );
         return;
       }
@@ -189,10 +196,8 @@ export default function ProductosManagement() {
     const result = await saveProducto(dataToSave, editingId, token);
 
     if (result.success) {
-      alert(
-        editingId
-          ? "Producto actualizado con éxito"
-          : "Producto creado con éxito"
+      notify.success(
+        editingId ? "Producto actualizado con éxito" : "Producto creado con éxito",
       );
       loadProductos(token);
       setShowForm(false);
@@ -202,31 +207,29 @@ export default function ProductosManagement() {
       setStockDisminucion(0);
       setStockOriginal(0);
     } else {
-      alert(`Error al guardar el producto: ${result.error}`);
+      notify.error(`Error al guardar el producto: ${result.error}`);
     }
   };
 
   // Eliminar producto (usa el endpoint de borrado lógico)
   const handleDelete = async (id) => {
-    if (
-      window.confirm(
-        "¿Está seguro que desea eliminar este producto? Esta acción lo desactivará."
-      )
-    ) {
-      const result = await desactivarProducto(id, token);
+    const ok = await confirm({
+      title: "Desactivar producto",
+      message: "¿Confirma desactivar este producto? Podrá reactivarlo después.",
+      confirmLabel: "Desactivar",
+      destructive: true,
+    });
+    if (!ok) return;
+    const result = await desactivarProducto(id, token);
 
-      if (result.success) {
-        loadProductos(token);
-
-        // Si el producto eliminado estaba seleccionado, deseleccionarlo
-        if (selectedProducto && selectedProducto.id === id) {
-          setSelectedProducto(null);
-        }
-
-        alert("Producto desactivado con éxito");
-      } else {
-        alert(result.error);
+    if (result.success) {
+      loadProductos(token);
+      if (selectedProducto && selectedProducto.id === id) {
+        setSelectedProducto(null);
       }
+      notify.success("Producto desactivado con éxito");
+    } else {
+      notify.error(result.error);
     }
   };
 
@@ -236,9 +239,9 @@ export default function ProductosManagement() {
 
     if (result.success) {
       loadProductos(token);
-      alert("Producto activado con éxito");
+      notify.success("Producto activado con éxito");
     } else {
-      alert(result.error);
+      notify.error(result.error);
     }
   };
 
@@ -247,18 +250,6 @@ export default function ProductosManagement() {
     setSelectedProducto(producto);
     setShowForm(false);
   };
-
-  // Restricción de acceso
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando productos...</p>
-        </div>
-      </div>
-    );
-  }
 
   const rol = localStorage.getItem("rol");
   if (rol !== "administrador") {
@@ -282,39 +273,29 @@ export default function ProductosManagement() {
     );
   }
 
-  if (error) {
-    return (
-      <div className="p-8 text-center">
-        <div className="bg-red-50 border border-red-200 rounded-xl p-6 inline-block">
-          <h2 className="text-xl font-semibold text-red-700 mb-2">
-            Error al cargar productos
-          </h2>
-          <p className="text-gray-700">{error}</p>
-          <button
-            onClick={() => loadProductos(token)}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg"
-          >
-            Reintentar
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Columna izquierda - Lista de productos */}
-        <div className="flex-1 bg-white rounded-xl shadow p-4 md:p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold">Gestión de Productos</h2>
-            <Button
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg"
-              onClick={handleShowCreateForm}
-            >
-              Nuevo Producto
-            </Button>
-          </div>
+    <PageShell
+      loading={loading}
+      error={error}
+      onRetry={() => loadProductos(token)}
+      loadingMessage="Cargando productos..."
+    >
+    <AdminPageLayout
+      title="Gestión de productos"
+      subtitle="Inventario de mostrador, precios y stock"
+      action={
+        <Tooltip label="Agregar producto al catálogo">
+          <Button
+            className="btn-primary min-h-[2.75rem] px-4 py-2.5 text-sm"
+            onClick={handleShowCreateForm}
+          >
+            Nuevo producto
+          </Button>
+        </Tooltip>
+      }
+    >
+      <div className="flex flex-col gap-6 lg:flex-row">
+        <div className="flex-1">
 
           {/* Búsqueda */}
           <div className="mb-6">
@@ -398,54 +379,24 @@ export default function ProductosManagement() {
                       </span>
                     </div>
 
-                    <div className="flex space-x-2">
-                      <button
+                    <div className="flex gap-1.5">
+                      <ActionIconButton
+                        variant="edit"
+                        label="Editar producto"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleShowEditForm(producto);
                         }}
-                        className="p-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
-                        title="Editar producto"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                          />
-                        </svg>
-                      </button>
-                      <button
+                      />
+                      <ActionIconButton
+                        variant="deactivate"
+                        label="Desactivar producto"
+                        disabled={!producto.Activo}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(producto.id);
                         }}
-                        className="p-1.5 bg-red-600 hover:bg-red-700 text-white rounded-md"
-                        title="Eliminar producto"
-                        disabled={!producto.Activo}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                          />
-                        </svg>
-                      </button>
+                      />
                     </div>
                   </div>
                 </div>
@@ -883,6 +834,7 @@ export default function ProductosManagement() {
           </div>
         )}
       </div>
-    </div>
+    </AdminPageLayout>
+    </PageShell>
   );
 }

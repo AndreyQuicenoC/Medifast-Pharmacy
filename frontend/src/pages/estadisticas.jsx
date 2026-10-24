@@ -13,6 +13,33 @@ import {
   Legend,
 } from "chart.js";
 import { Bar, Line, Pie, Doughnut } from "react-chartjs-2";
+import AdminPageLayout from "../components/AdminPageLayout";
+import { IconAdminStats } from "../components/AdminModuleIcons";
+
+function MetricCard({ label, value, hint, tone = "emerald" }) {
+  const tones = {
+    emerald: "border-emerald-200 bg-emerald-50/80 text-emerald-900",
+    blue: "border-sky-200 bg-sky-50/80 text-sky-900",
+    violet: "border-violet-200 bg-violet-50/80 text-violet-900",
+    amber: "border-amber-200 bg-amber-50/80 text-amber-900",
+  };
+  return (
+    <article className={`rounded-xl border p-5 shadow-sm ${tones[tone] || tones.emerald}`}>
+      <p className="text-xs font-semibold uppercase tracking-wide opacity-80">{label}</p>
+      <p className="mt-2 text-2xl font-bold">{value}</p>
+      {hint ? <p className="mt-1 text-sm opacity-75">{hint}</p> : null}
+    </article>
+  );
+}
+
+function SectionCard({ title, children }) {
+  return (
+    <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <h3 className="mb-4 text-lg font-semibold text-[var(--color-text)]">{title}</h3>
+      {children}
+    </section>
+  );
+}
 
 // Registrar componentes de Chart.js
 ChartJS.register(
@@ -154,7 +181,7 @@ export default function Estadisticas() {
 
   // Gráfico de productos más vendidos
   const productosChart =
-    ventasProductos && ventasProductos.productos.length > 0
+    ventasProductos?.productos?.length > 0
       ? {
           labels: ventasProductos.productos.slice(0, 8).map((p) => p.nombre),
           datasets: [
@@ -180,7 +207,7 @@ export default function Estadisticas() {
 
   // Gráfico de servicios
   const serviciosChart =
-    serviciosData && serviciosData.servicios.length > 0
+    serviciosData?.servicios?.length > 0
       ? {
           labels: serviciosData.servicios.map((s) => s.nombre),
           datasets: [
@@ -221,25 +248,37 @@ export default function Estadisticas() {
     : null;
 
   // Gráfico de tiempos de espera
-  const tiemposEsperaChart = tiemposData
+  const rangosEspera =
+    tiemposData?.rangos_espera &&
+    typeof tiemposData.rangos_espera === "object" &&
+    !Array.isArray(tiemposData.rangos_espera)
+      ? tiemposData.rangos_espera
+      : null;
+  const rangosAtencion =
+    tiemposData?.rangos_atencion &&
+    typeof tiemposData.rangos_atencion === "object" &&
+    !Array.isArray(tiemposData.rangos_atencion)
+      ? tiemposData.rangos_atencion
+      : null;
+
+  const tiemposEsperaChart = rangosEspera
     ? {
-        labels: Object.keys(tiemposData.rangos_espera),
+        labels: Object.keys(rangosEspera),
         datasets: [
           {
-            data: Object.values(tiemposData.rangos_espera),
+            data: Object.values(rangosEspera),
             backgroundColor: ["#10B981", "#F59E0B", "#EF4444", "#8B5CF6"],
           },
         ],
       }
     : null;
 
-  // Gráfico de tiempos de atención
-  const tiemposAtencionChart = tiemposData
+  const tiemposAtencionChart = rangosAtencion
     ? {
-        labels: Object.keys(tiemposData.rangos_atencion),
+        labels: Object.keys(rangosAtencion),
         datasets: [
           {
-            data: Object.values(tiemposData.rangos_atencion),
+            data: Object.values(rangosAtencion),
             backgroundColor: ["#06B6D4", "#84CC16", "#F97316", "#EC4899"],
           },
         ],
@@ -247,20 +286,20 @@ export default function Estadisticas() {
     : null;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 max-w-10xl mr-50 ml-50 rounded-xl">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            📊 Panel de Estadísticas
-          </h1>
-
-          {/* Selector de período */}
-          <div className="flex flex-wrap gap-4 mb-4">
+    <AdminPageLayout
+      title="Panel de estadísticas"
+      subtitle="Indicadores de ventas, turnos, clientes y tiempos de atención"
+      action={
+        <span className="hidden rounded-lg bg-emerald-100 p-2 text-emerald-800 sm:inline-flex">
+          <IconAdminStats className="h-6 w-6" />
+        </span>
+      }
+    >
+        <div className="mb-6 flex flex-wrap items-center gap-3">
             <select
               value={periodo}
               onChange={(e) => setPeriodo(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="min-h-[2.75rem] rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm focus:ring-2 focus:ring-emerald-600/30"
             >
               <option value="diario">Diario</option>
               <option value="semanal">Semanal</option>
@@ -269,19 +308,18 @@ export default function Estadisticas() {
             </select>
 
             <button
+              type="button"
               onClick={cargarDatos}
               disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="btn-primary min-h-[2.75rem] px-6 py-2.5 text-sm disabled:opacity-50"
             >
               {loading ? "Cargando..." : "Actualizar"}
             </button>
           </div>
 
-          {/* Tabs de navegación */}
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8">
+          <nav className="-mb-px mb-6 flex flex-wrap gap-2 border-b border-gray-200 pb-1" aria-label="Secciones">
               {[
-                { id: "resumen", label: "Resumen General" },
+                { id: "resumen", label: "Resumen" },
                 { id: "ventas", label: "Ventas" },
                 { id: "productos", label: "Productos" },
                 { id: "servicios", label: "Servicios" },
@@ -290,19 +328,18 @@ export default function Estadisticas() {
               ].map((tab) => (
                 <button
                   key={tab.id}
+                  type="button"
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                  className={`min-h-[2.5rem] rounded-t-lg px-4 py-2 text-sm font-medium ${
                     activeTab === tab.id
-                      ? "border-blue-500 text-blue-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      ? "border-b-2 border-emerald-600 bg-emerald-50 text-emerald-800"
+                      : "text-gray-600 hover:bg-gray-50"
                   }`}
                 >
                   {tab.label}
                 </button>
               ))}
-            </nav>
-          </div>
-        </div>
+          </nav>
 
         {loading && (
           <div className="flex justify-center items-center py-12">
@@ -315,88 +352,56 @@ export default function Estadisticas() {
           <>
             {/* Tab Resumen */}
             {activeTab === "resumen" && resumenData && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                    💰 Ventas Totales
-                  </h3>
-                  <p className="text-3xl font-bold text-green-600">
-                    ${resumenData.ventas.total.toLocaleString()}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {resumenData.ventas.cantidad_facturas} facturas
-                  </p>
-                </div>
-
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                    🎫 Turnos
-                  </h3>
-                  <p className="text-3xl font-bold text-blue-600">
-                    {resumenData.turnos.total}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {resumenData.turnos.porcentaje_exito}% exitosos
-                  </p>
-                </div>
-
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                    👥 Clientes Únicos
-                  </h3>
-                  <p className="text-3xl font-bold text-purple-600">
-                    {resumenData.clientes_unicos}
-                  </p>
-                  <p className="text-sm text-gray-500">En {periodo}</p>
-                </div>
-
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                    🎯 Promedio por Venta
-                  </h3>
-                  <p className="text-3xl font-bold text-orange-600">
-                    ${resumenData.ventas.promedio_por_factura.toFixed(2)}
-                  </p>
-                  <p className="text-sm text-gray-500">Por factura</p>
-                </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <MetricCard
+                  label="Ventas totales"
+                  value={`$${resumenData.ventas.total.toLocaleString()}`}
+                  hint={`${resumenData.ventas.cantidad_facturas} facturas`}
+                  tone="emerald"
+                />
+                <MetricCard
+                  label="Turnos"
+                  value={resumenData.turnos.total}
+                  hint={`${resumenData.turnos.porcentaje_exito}% exitosos`}
+                  tone="blue"
+                />
+                <MetricCard
+                  label="Clientes únicos"
+                  value={resumenData.clientes_unicos}
+                  hint={`Periodo: ${periodo}`}
+                  tone="violet"
+                />
+                <MetricCard
+                  label="Promedio por venta"
+                  value={`$${resumenData.ventas.promedio_por_factura.toFixed(2)}`}
+                  hint="Por factura"
+                  tone="amber"
+                />
               </div>
             )}
 
             {/* Tab Ventas */}
             {activeTab === "ventas" && ventasGeneralesChart && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-xl font-semibold mb-4">
-                    💰 Ventas Totales por {periodo}
-                  </h3>
+                <SectionCard title={`Ventas totales (${periodo})`}>
                   <Bar data={ventasGeneralesChart} options={chartOptions} />
-                </div>
-
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-xl font-semibold mb-4">
-                    📊 Cantidad de Ventas por {periodo}
-                  </h3>
+                </SectionCard>
+                <SectionCard title={`Cantidad de ventas (${periodo})`}>
                   <Bar data={cantidadVentasChart} options={chartOptions} />
-                </div>
+                </SectionCard>
               </div>
             )}
 
             {/* Tab Productos */}
             {activeTab === "productos" && productosChart && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-xl font-semibold mb-4">
-                    🏆 Top Productos por Ingresos
-                  </h3>
+                <SectionCard title="Top productos por ingresos">
                   <Pie data={productosChart} options={pieOptions} />
-                </div>
+                </SectionCard>
 
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-xl font-semibold mb-4">
-                    📋 Detalle de Productos
-                  </h3>
+                <SectionCard title="Detalle de productos">
                   <div className="overflow-y-auto max-h-96">
-                    {ventasProductos.productos
+                    {(ventasProductos?.productos || [])
                       .slice(0, 10)
                       .map((producto, index) => (
                         <div
@@ -420,26 +425,20 @@ export default function Estadisticas() {
                         </div>
                       ))}
                   </div>
-                </div>
+                </SectionCard>
               </div>
             )}
 
             {/* Tab Servicios */}
             {activeTab === "servicios" && serviciosChart && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-xl font-semibold mb-4">
-                    🎯 Uso de Servicios
-                  </h3>
+                <SectionCard title="Uso de servicios">
                   <Bar data={serviciosChart} options={chartOptions} />
-                </div>
+                </SectionCard>
 
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-xl font-semibold mb-4">
-                    📈 Eficiencia de Servicios
-                  </h3>
+                <SectionCard title="Eficiencia de servicios">
                   <div className="space-y-4">
-                    {serviciosData.servicios.map((servicio, index) => (
+                    {(serviciosData?.servicios || []).map((servicio, index) => (
                       <div key={index} className="p-4 bg-gray-50 rounded-lg">
                         <h4 className="font-semibold">{servicio.nombre}</h4>
                         <div className="mt-2 grid grid-cols-2 gap-4 text-sm">
@@ -475,24 +474,18 @@ export default function Estadisticas() {
                       </div>
                     ))}
                   </div>
-                </div>
+                </SectionCard>
               </div>
             )}
 
             {/* Tab Clientes */}
             {activeTab === "clientes" && clientesChart && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-xl font-semibold mb-4">
-                    👥 Evolución de Clientes
-                  </h3>
+                <SectionCard title="Evolución de clientes">
                   <Line data={clientesChart} options={chartOptions} />
-                </div>
+                </SectionCard>
 
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-xl font-semibold mb-4">
-                    📊 Resumen de Clientes
-                  </h3>
+                <SectionCard title="Resumen de clientes">
                   <div className="space-y-4">
                     <div className="p-4 bg-blue-50 rounded-lg">
                       <h4 className="font-semibold text-blue-800">
@@ -517,38 +510,29 @@ export default function Estadisticas() {
                         Nuevos Clientes en {periodo}
                       </h4>
                       <p className="text-2xl font-bold text-purple-600">
-                        {clientesData.nuevos_clientes.reduce(
+                        {(clientesData.nuevos_clientes || []).reduce(
                           (a, b) => a + b,
                           0
                         )}
                       </p>
                     </div>
                   </div>
-                </div>
+                </SectionCard>
               </div>
             )}
 
             {/* Tab Tiempos */}
             {activeTab === "tiempos" && tiemposData && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-xl font-semibold mb-4">
-                    ⏱️ Distribución de Tiempos de Espera
-                  </h3>
+                <SectionCard title="Tiempos de espera">
                   <Doughnut data={tiemposEsperaChart} options={pieOptions} />
-                </div>
+                </SectionCard>
 
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-xl font-semibold mb-4">
-                    🕒 Distribución de Tiempos de Atención
-                  </h3>
+                <SectionCard title="Tiempos de atención">
                   <Doughnut data={tiemposAtencionChart} options={pieOptions} />
-                </div>
+                </SectionCard>
 
-                <div className="bg-white p-6 rounded-lg shadow-md lg:col-span-2">
-                  <h3 className="text-xl font-semibold mb-4">
-                    📊 Estadísticas de Tiempos
-                  </h3>
+                <SectionCard title="Estadísticas de tiempos">
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="text-center p-4 bg-blue-50 rounded-lg">
                       <p className="text-sm text-gray-600">Espera Promedio</p>
@@ -575,12 +559,11 @@ export default function Estadisticas() {
                       </p>
                     </div>
                   </div>
-                </div>
+                </SectionCard>
               </div>
             )}
           </>
         )}
-      </div>
-    </div>
+    </AdminPageLayout>
   );
 }

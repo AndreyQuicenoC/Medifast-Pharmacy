@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { getApiErrorMessage } from "../utils/apiError";
+import { notify } from "../utils/notify";
 import medifastLogo from "../assets/medifast_logo.png";
 
 export default function Login() {
@@ -64,30 +66,21 @@ export default function Login() {
         navigate("/pedir-turno");
       } else {
         // Usuario sin rol específico
-        alert("Usuario sin rol asignado. Contacte al administrador.");
+        notify.error("Usuario sin rol asignado. Contacte al administrador.");
       }
     } catch (error) {
       console.error("Error de login:", error);
 
-      let errorMessage = "Error al iniciar sesión: ";
-
-      if (error.response?.status === 400) {
-        errorMessage +=
-          error.response?.data?.non_field_errors?.[0] ||
-          "Credenciales inválidas";
-      } else if (error.response?.status === 401) {
-        errorMessage += "Credenciales incorrectas";
-      } else if (error.response?.status === 500) {
-        errorMessage += "Error del servidor. Intente más tarde";
-      } else if (error.code === "ECONNREFUSED" || !error.response) {
-        errorMessage +=
-          "No se puede conectar al servidor. Verifique que el backend esté funcionando";
-      } else {
-        errorMessage +=
-          error.response?.data?.detail || error.message || "Error desconocido";
+      if (error.code === "ECONNREFUSED" || !error.response) {
+        notify.error(
+          "No se puede conectar al servidor. Verifique que el backend este en ejecucion.",
+        );
+        return;
       }
 
-      alert(errorMessage);
+      notify.error(
+        `Error al iniciar sesion: ${getApiErrorMessage(error, "Credenciales invalidas")}`,
+      );
     }
   };
 

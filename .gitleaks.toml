@@ -1,0 +1,34 @@
+title = "Medifast gitleaks"
+
+[extend]
+useDefault = true
+# [[rules]] disabled=true NO desactiva reglas heredadas en v8.21; usar disabledRules.
+disabledRules = [
+  "sidekiq-secret",
+  "sidekiq-pro-secret",
+  "rubygems-api-token",
+]
+
+[allowlist]
+description = "Plantillas, dependencias, tests y placeholders documentados"
+paths = [
+  '''(^|/)frontend/node_modules''',
+  '''node_modules''',
+  '''(^|[\\/])backend[\\/]\.venv[\\/]''',
+  '''(^|[\\/])\.venv[\\/]''',
+  '''(^|/)backend/(env)/''',
+  '''(^|/)backend/tests/''',
+  '''docs/despliegue/acceso-produccion\.example\.md''',
+  '''(^|/)backend/\.env\.example$''',
+  '''(^|/)\.env\.example$''',
+  '''(^|/)frontend/\.env\.example$''',
+  '''(^|/)backend/\.pytest_cache/''',
+  '''(^|/)backend/\.venv/''',
+]
+regexes = [
+  '''(?i)replace-with-''',
+  '''(?i)your-[a-z-]+''',
+  '''(?i)change-me-''',
+  '''<[^>\n]{1,80}>''',
+  '''TOKEN_PLACEHOLDER''',
+]
