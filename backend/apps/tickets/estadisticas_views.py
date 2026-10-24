@@ -4,7 +4,7 @@ from django.db.models.functions import TruncDate, TruncWeek, TruncMonth, TruncYe
 from django.utils import timezone
 from datetime import datetime, timedelta
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 import json
@@ -14,7 +14,7 @@ from apps.users.models import Cliente, User
 from apps.products.models import Producto
 
 @api_view(['GET'])
-@permission_classes([AllowAny])  # Allow any user for testing
+@permission_classes([IsAuthenticated])
 def estadisticas_ventas_generales(request):
     """Estadísticas de ventas generales por período"""
     periodo = request.GET.get('periodo', 'diario')  # diario, semanal, mensual, anual
@@ -74,7 +74,7 @@ def estadisticas_ventas_generales(request):
     })
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def estadisticas_ventas_por_producto(request):
     """Estadísticas de ventas por producto"""
     periodo = request.GET.get('periodo', 'diario')
@@ -137,7 +137,7 @@ def estadisticas_ventas_por_producto(request):
     })
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def estadisticas_servicios(request):
     """Estadísticas de uso de servicios"""
     periodo = request.GET.get('periodo', 'diario')
@@ -181,7 +181,7 @@ def estadisticas_servicios(request):
     })
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def estadisticas_clientes(request):
     """Estadísticas de clientes"""
     periodo = request.GET.get('periodo', 'diario')
@@ -245,7 +245,7 @@ def estadisticas_clientes(request):
     })
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def estadisticas_tiempos_atencion(request):
     """Estadísticas de tiempos de atención y espera"""
     periodo = request.GET.get('periodo', 'diario')
@@ -333,7 +333,7 @@ def estadisticas_tiempos_atencion(request):
     })
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def estadisticas_resumen(request):
     """Resumen general de estadísticas"""
     periodo = request.GET.get('periodo', 'diario')

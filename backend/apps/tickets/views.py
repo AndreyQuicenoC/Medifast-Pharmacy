@@ -13,6 +13,7 @@ from rest_framework.decorators import action
 from django.db import models
 
 class CajaViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Caja.objects.filter(deleted_at__isnull=True)
     serializer_class = CajaSerializer
 

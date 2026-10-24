@@ -17,6 +17,7 @@ class ProductoViewSet(viewsets.ModelViewSet):
     """
     ViewSet completo para operaciones CRUD en productos.
     """
+    permission_classes = [IsAuthenticated]
     queryset = Producto.objects.all()
     serializer_class = ProductoSerializer
     

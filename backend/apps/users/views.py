@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import viewsets, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.serializers import ValidationError
 from django.db import transaction
 from django.contrib.auth.hashers import check_password
@@ -113,6 +114,7 @@ class RolViewSet(viewsets.ModelViewSet):
     serializer_class = RolSerializer
 
 class UserViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
 
     queryset = User.objects.filter(deleted_at__isnull=True)
     serializer_class = UserSerializer
