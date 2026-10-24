@@ -7,6 +7,7 @@ import {
   IconAdminStats,
   IconAdminUsuarios,
 } from "../components/AdminModuleIcons";
+import Tooltip from "../components/Tooltip";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -41,15 +42,16 @@ export default function AdminDashboard() {
         </header>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {options.map((opt) => (
-            <button
-              key={opt.path}
-              type="button"
-              onClick={() => navigate(opt.path)}
-              className={`group flex min-h-[10.5rem] flex-col items-center justify-center gap-3 rounded-2xl bg-gradient-to-br ${opt.tone} p-6 text-white shadow-md transition duration-200 hover:-translate-y-1 hover:shadow-lg`}
-            >
-              <opt.Icon />
-              <span className="text-base font-semibold">{opt.label}</span>
-            </button>
+            <Tooltip key={opt.path} label={`Abrir ${opt.label.toLowerCase()}`}>
+              <button
+                type="button"
+                onClick={() => navigate(opt.path)}
+                className={`group flex min-h-[10.5rem] w-full flex-col items-center justify-center gap-3 rounded-2xl bg-gradient-to-br ${opt.tone} p-6 text-white shadow-md transition duration-200 hover:-translate-y-1 hover:shadow-lg`}
+              >
+                <opt.Icon />
+                <span className="text-base font-semibold">{opt.label}</span>
+              </button>
+            </Tooltip>
           ))}
         </div>
       </div>
