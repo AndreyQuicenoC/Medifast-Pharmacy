@@ -1,39 +1,39 @@
 #!/usr/bin/env python
 """
-Script para crear superusuario en producción
-Usar después del primer despliegue en Render
+Crea el primer superusuario usando variables de entorno (post-despliegue).
 """
 import os
-import django
 from datetime import datetime
-from django.core.management import execute_from_command_line
+
+import django
 
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "DS1.settings")
     django.setup()
-    
+
     from django.contrib.auth import get_user_model
-    
+
     User = get_user_model()
-    
-    # Verificar si ya existe un superusuario
-    if not User.objects.filter(is_superuser=True).exists():
-        # Crear superusuario con datos de variables de entorno
-        admin_cc = os.environ.get('ADMIN_CC', '12345678')
-        admin_email = os.environ.get('ADMIN_EMAIL', 'admin@farmacia.com')
-        admin_password = os.environ.get('ADMIN_PASSWORD', 'admin123')
-        admin_phone = os.environ.get('ADMIN_PHONE', '3001234567')
-        
-        User.objects.create_superuser(
-            cc='123456',
-            email='admin@farmacia.com',
-            password='Admin1234*',
-            first_name='Administrador',
-            last_name='Sistema',
-            phone_number='3114322544',
-            dob=datetime(1990, 1, 1),
-            rol='administrador'
+
+    if User.objects.filter(is_superuser=True).exists():
+        print("Ya existe un superusuario en el sistema.")
+        raise SystemExit(0)
+
+    required = ("ADMIN_CC", "ADMIN_EMAIL", "ADMIN_PASSWORD", "ADMIN_PHONE")
+    missing = [name for name in required if not os.environ.get(name)]
+    if missing:
+        raise SystemExit(
+            "Defina variables de entorno: " + ", ".join(missing)
         )
-        print(f"Superusuario creado: CC 123456, Email: admin@farmacia.com")
-    else:
-        print("Ya existe un superusuario en el sistema")
+
+    User.objects.create_superuser(
+        cc=os.environ["ADMIN_CC"],
+        email=os.environ["ADMIN_EMAIL"],
+        password=os.environ["ADMIN_PASSWORD"],
+        first_name=os.environ.get("ADMIN_FIRST_NAME", "Administrador"),
+        last_name=os.environ.get("ADMIN_LAST_NAME", "Sistema"),
+        phone_number=os.environ["ADMIN_PHONE"],
+        dob=datetime(1990, 1, 1),
+        rol="administrador",
+    )
+    print(f"Superusuario creado: CC {os.environ['ADMIN_CC']}")

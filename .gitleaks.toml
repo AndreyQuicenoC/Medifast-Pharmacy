@@ -12,5 +12,6 @@ tags = ["medifast"]
 [allowlist]
 paths = [
   '''docs/despliegue/acceso-produccion.example.md''',
-  '''docs/desarrollo/usuarios-prueba.md''',
+  '''backend/\.env\.example''',
+  '''\.env\.example''',
 ]

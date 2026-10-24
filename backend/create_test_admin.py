@@ -13,6 +13,14 @@ django.setup()
 
 from apps.users.models import User, Administrador
 
+
+def _dev_password():
+    value = os.environ.get("MEDIFAST_DEV_PASSWORD")
+    if not value:
+        raise RuntimeError("Defina MEDIFAST_DEV_PASSWORD antes de ejecutar este script.")
+    return value
+
+
 def create_test_admin():
     """Crear un administrador de prueba"""
     try:
@@ -28,22 +36,19 @@ def create_test_admin():
             first_name='Admin',
             last_name='Test',
             email='admin@test.com',
-            phone_number='1234567890',
+            phone_number=3001234567,
             rol='administrador',
             is_staff=True,
             is_active=True,
             dob=date(1990, 1, 1)  # Fecha de nacimiento por defecto
         )
-        user.set_password('admin123')
+        user.set_password(_dev_password())
         user.save()
 
         # Crear entrada en tabla Administrador
         Administrador.objects.create(ID_Usuario=user)
 
-        print(f"✓ Usuario administrador creado:")
-        print(f"  Email: admin@test.com")
-        print(f"  Password: admin123")
-        print(f"  CC: 12345678")
+        print("Usuario administrador creado (admin@test.com, cc=12345678).")
         
     except Exception as e:
         print(f"❌ Error: {e}")

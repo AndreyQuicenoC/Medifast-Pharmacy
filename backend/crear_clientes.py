@@ -11,8 +11,15 @@ django.setup()
 
 from apps.users.models import User, Cliente
 
+def _dev_password():
+    value = os.environ.get("MEDIFAST_DEV_PASSWORD")
+    if not value:
+        raise RuntimeError("Defina MEDIFAST_DEV_PASSWORD antes de ejecutar este script.")
+    return value
+
+
 def crear_clientes():
-    """Crear 10 clientes con cédulas colombianas y contraseña 'pinito1'"""
+    """Crear 10 clientes con cédulas colombianas (solo desarrollo)."""
     
     clientes_data = [
         {
@@ -107,7 +114,7 @@ def crear_clientes():
         }
     ]
     
-    password = make_password('pinito1')
+    password = make_password(_dev_password())
     created_count = 0
     
     for cliente_data in clientes_data:
@@ -142,8 +149,7 @@ def crear_clientes():
         except Exception as e:
             print(f"❌ Error creando cliente {cliente_data['first_name']} {cliente_data['last_name']}: {str(e)}")
     
-    print(f"\n🎉 Proceso completado. {created_count} clientes creados exitosamente.")
-    print("Contraseña para todos los clientes: pinito1")
+    print(f"\nProceso completado. {created_count} clientes creados exitosamente.")
 
 if __name__ == '__main__':
     crear_clientes()

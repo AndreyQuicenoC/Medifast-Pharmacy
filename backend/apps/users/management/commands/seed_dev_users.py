@@ -48,8 +48,8 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             "--password",
-            default="DevMedifast2026!",
-            help="Contrasena compartida para cuentas de desarrollo (solo local).",
+            required=True,
+            help="Contrasena ficticia para cuentas de desarrollo (solo local).",
         )
 
     @transaction.atomic

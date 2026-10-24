@@ -49,11 +49,7 @@ npm run preview
 
 ## 🔑 Usuarios de Prueba
 
-**Administrador:**
-
-- **CC:** 12345678
-- **Email:** admin@test.com
-- **Password:** admin123
+Ver [usuarios-prueba.md](./usuarios-prueba.md) (`seed_dev_users --password` en backend local).
 
 ## 📦 Dependencias Principales
 

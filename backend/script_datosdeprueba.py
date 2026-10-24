@@ -22,6 +22,14 @@ from apps.tickets.models import Factura, Caja, Turno, Horario, Servicio
 from rest_framework.authtoken.models import Token
 from django.db import transaction
 
+
+def dev_password():
+    value = os.environ.get("MEDIFAST_DEV_PASSWORD")
+    if not value:
+        raise RuntimeError("Defina MEDIFAST_DEV_PASSWORD antes de ejecutar este script.")
+    return value
+
+
 def create_test_data():
     """Crear todos los datos de prueba"""
     print("🚀 Iniciando creación de datos de prueba...")
@@ -59,7 +67,7 @@ def create_test_data():
             }
         )
         if created:
-            user_1.set_password("123456")  # Password por defecto
+            user_1.set_password(dev_password())  # Password por defecto
             user_1.save()
 
         user_2, created = User.objects.get_or_create(
@@ -77,7 +85,7 @@ def create_test_data():
             }
         )
         if created:
-            user_2.set_password("123456")  # Password por defecto
+            user_2.set_password(dev_password())  # Password por defecto
             user_2.save()
 
         user_3, created = User.objects.get_or_create(
@@ -95,7 +103,7 @@ def create_test_data():
             }
         )
         if created:
-            user_3.set_password("123456")  # Password por defecto
+            user_3.set_password(dev_password())  # Password por defecto
             user_3.save()
 
         user_4, created = User.objects.get_or_create(
@@ -113,7 +121,7 @@ def create_test_data():
             }
         )
         if created:
-            user_4.set_password("123456")  # Password por defecto
+            user_4.set_password(dev_password())  # Password por defecto
             user_4.save()
 
         user_5, created = User.objects.get_or_create(
@@ -131,7 +139,7 @@ def create_test_data():
             }
         )
         if created:
-            user_5.set_password("123456")  # Password por defecto
+            user_5.set_password(dev_password())  # Password por defecto
             user_5.save()
 
         user_7, created = User.objects.get_or_create(
@@ -149,7 +157,7 @@ def create_test_data():
             }
         )
         if created:
-            user_7.set_password("123456")  # Password por defecto
+            user_7.set_password(dev_password())  # Password por defecto
             user_7.save()
 
         user_8, created = User.objects.get_or_create(
@@ -167,7 +175,7 @@ def create_test_data():
             }
         )
         if created:
-            user_8.set_password("123456")  # Password por defecto
+            user_8.set_password(dev_password())  # Password por defecto
             user_8.save()
 
         user_9, created = User.objects.get_or_create(
@@ -185,7 +193,7 @@ def create_test_data():
             }
         )
         if created:
-            user_9.set_password("123456")  # Password por defecto
+            user_9.set_password(dev_password())  # Password por defecto
             user_9.save()
 
         user_10, created = User.objects.get_or_create(
@@ -203,7 +211,7 @@ def create_test_data():
             }
         )
         if created:
-            user_10.set_password("123456")  # Password por defecto
+            user_10.set_password(dev_password())  # Password por defecto
             user_10.save()
 
         user_11, created = User.objects.get_or_create(
@@ -221,7 +229,7 @@ def create_test_data():
             }
         )
         if created:
-            user_11.set_password("123456")  # Password por defecto
+            user_11.set_password(dev_password())  # Password por defecto
             user_11.save()
 
         user_12, created = User.objects.get_or_create(
@@ -239,7 +247,7 @@ def create_test_data():
             }
         )
         if created:
-            user_12.set_password("123456")  # Password por defecto
+            user_12.set_password(dev_password())  # Password por defecto
             user_12.save()
 
         user_13, created = User.objects.get_or_create(
@@ -257,7 +265,7 @@ def create_test_data():
             }
         )
         if created:
-            user_13.set_password("123456")  # Password por defecto
+            user_13.set_password(dev_password())  # Password por defecto
             user_13.save()
 
         user_14, created = User.objects.get_or_create(
@@ -275,7 +283,7 @@ def create_test_data():
             }
         )
         if created:
-            user_14.set_password("123456")  # Password por defecto
+            user_14.set_password(dev_password())  # Password por defecto
             user_14.save()
 
         user_15, created = User.objects.get_or_create(
@@ -293,7 +301,7 @@ def create_test_data():
             }
         )
         if created:
-            user_15.set_password("123456")  # Password por defecto
+            user_15.set_password(dev_password())  # Password por defecto
             user_15.save()
 
         user_16, created = User.objects.get_or_create(
@@ -311,7 +319,7 @@ def create_test_data():
             }
         )
         if created:
-            user_16.set_password("123456")  # Password por defecto
+            user_16.set_password(dev_password())  # Password por defecto
             user_16.save()
 
         user_17, created = User.objects.get_or_create(
@@ -329,7 +337,7 @@ def create_test_data():
             }
         )
         if created:
-            user_17.set_password("123456")  # Password por defecto
+            user_17.set_password(dev_password())  # Password por defecto
             user_17.save()
 
         user_18, created = User.objects.get_or_create(
@@ -347,7 +355,7 @@ def create_test_data():
             }
         )
         if created:
-            user_18.set_password("123456")  # Password por defecto
+            user_18.set_password(dev_password())  # Password por defecto
             user_18.save()
 
         user_19, created = User.objects.get_or_create(
@@ -365,7 +373,7 @@ def create_test_data():
             }
         )
         if created:
-            user_19.set_password("123456")  # Password por defecto
+            user_19.set_password(dev_password())  # Password por defecto
             user_19.save()
 
         user_20, created = User.objects.get_or_create(
@@ -383,7 +391,7 @@ def create_test_data():
             }
         )
         if created:
-            user_20.set_password("123456")  # Password por defecto
+            user_20.set_password(dev_password())  # Password por defecto
             user_20.save()
 
         user_21, created = User.objects.get_or_create(
@@ -401,7 +409,7 @@ def create_test_data():
             }
         )
         if created:
-            user_21.set_password("123456")  # Password por defecto
+            user_21.set_password(dev_password())  # Password por defecto
             user_21.save()
 
         user_22, created = User.objects.get_or_create(
@@ -419,7 +427,7 @@ def create_test_data():
             }
         )
         if created:
-            user_22.set_password("123456")  # Password por defecto
+            user_22.set_password(dev_password())  # Password por defecto
             user_22.save()
 
         user_23, created = User.objects.get_or_create(
@@ -437,7 +445,7 @@ def create_test_data():
             }
         )
         if created:
-            user_23.set_password("123456")  # Password por defecto
+            user_23.set_password(dev_password())  # Password por defecto
             user_23.save()
 
         user_24, created = User.objects.get_or_create(
@@ -455,7 +463,7 @@ def create_test_data():
             }
         )
         if created:
-            user_24.set_password("123456")  # Password por defecto
+            user_24.set_password(dev_password())  # Password por defecto
             user_24.save()
 
         user_25, created = User.objects.get_or_create(
@@ -473,7 +481,7 @@ def create_test_data():
             }
         )
         if created:
-            user_25.set_password("123456")  # Password por defecto
+            user_25.set_password(dev_password())  # Password por defecto
             user_25.save()
 
         user_26, created = User.objects.get_or_create(
@@ -491,7 +499,7 @@ def create_test_data():
             }
         )
         if created:
-            user_26.set_password("123456")  # Password por defecto
+            user_26.set_password(dev_password())  # Password por defecto
             user_26.save()
 
         user_27, created = User.objects.get_or_create(
@@ -509,7 +517,7 @@ def create_test_data():
             }
         )
         if created:
-            user_27.set_password("123456")  # Password por defecto
+            user_27.set_password(dev_password())  # Password por defecto
             user_27.save()
 
         user_28, created = User.objects.get_or_create(
@@ -527,7 +535,7 @@ def create_test_data():
             }
         )
         if created:
-            user_28.set_password("123456")  # Password por defecto
+            user_28.set_password(dev_password())  # Password por defecto
             user_28.save()
 
         user_29, created = User.objects.get_or_create(
@@ -545,7 +553,7 @@ def create_test_data():
             }
         )
         if created:
-            user_29.set_password("123456")  # Password por defecto
+            user_29.set_password(dev_password())  # Password por defecto
             user_29.save()
 
         user_30, created = User.objects.get_or_create(
@@ -563,7 +571,7 @@ def create_test_data():
             }
         )
         if created:
-            user_30.set_password("123456")  # Password por defecto
+            user_30.set_password(dev_password())  # Password por defecto
             user_30.save()
 
         user_31, created = User.objects.get_or_create(
@@ -581,7 +589,7 @@ def create_test_data():
             }
         )
         if created:
-            user_31.set_password("123456")  # Password por defecto
+            user_31.set_password(dev_password())  # Password por defecto
             user_31.save()
 
         user_32, created = User.objects.get_or_create(
@@ -599,7 +607,7 @@ def create_test_data():
             }
         )
         if created:
-            user_32.set_password("123456")  # Password por defecto
+            user_32.set_password(dev_password())  # Password por defecto
             user_32.save()
 
         user_33, created = User.objects.get_or_create(
@@ -617,7 +625,7 @@ def create_test_data():
             }
         )
         if created:
-            user_33.set_password("123456")  # Password por defecto
+            user_33.set_password(dev_password())  # Password por defecto
             user_33.save()
 
         user_34, created = User.objects.get_or_create(
@@ -635,7 +643,7 @@ def create_test_data():
             }
         )
         if created:
-            user_34.set_password("123456")  # Password por defecto
+            user_34.set_password(dev_password())  # Password por defecto
             user_34.save()
 
         user_35, created = User.objects.get_or_create(
@@ -653,7 +661,7 @@ def create_test_data():
             }
         )
         if created:
-            user_35.set_password("123456")  # Password por defecto
+            user_35.set_password(dev_password())  # Password por defecto
             user_35.save()
 
         user_36, created = User.objects.get_or_create(
@@ -671,90 +679,13 @@ def create_test_data():
             }
         )
         if created:
-            user_36.set_password("123456")  # Password por defecto
+            user_36.set_password(dev_password())  # Password por defecto
             user_36.save()
 
         # ===== TOKENS DE AUTENTICACIÓN =====
         print("🔐 Creando tokens de autenticación...")
-        token_1, created = Token.objects.get_or_create(
-            user=user_1,
-            defaults={"key": "b351e31d8e4de570d6fcefd2f5da3f789d51cccb"}
-        )
-
-        token_9, created = Token.objects.get_or_create(
-            user=user_9,
-            defaults={"key": "8bdd9d0f6f1f0ada10f033591d61ca913032c02c"}
-        )
-
-        token_18, created = Token.objects.get_or_create(
-            user=user_18,
-            defaults={"key": "d791fe75a48a393c2769cd3db588e74d56ccc288"}
-        )
-
-        token_3, created = Token.objects.get_or_create(
-            user=user_3,
-            defaults={"key": "622363aab2803cf2c00b3134ac51a9198d1b1b80"}
-        )
-
-        token_10, created = Token.objects.get_or_create(
-            user=user_10,
-            defaults={"key": "4124695b1cdababb7ee736817d3c5a23af00de43"}
-        )
-
-        token_16, created = Token.objects.get_or_create(
-            user=user_16,
-            defaults={"key": "9af7f455976131e91ef8c1c52e48de6c52f09d21"}
-        )
-
-        token_28, created = Token.objects.get_or_create(
-            user=user_28,
-            defaults={"key": "7581e10d87bbc264865b74418d9cd57f999034c9"}
-        )
-
-        token_27, created = Token.objects.get_or_create(
-            user=user_27,
-            defaults={"key": "343fa65783ce44403f4c2d64172a14b3e94fac08"}
-        )
-
-        token_26, created = Token.objects.get_or_create(
-            user=user_26,
-            defaults={"key": "caa8f6c22b2a3cee4a46747b4dc5217dcb1d36b6"}
-        )
-
-        token_24, created = Token.objects.get_or_create(
-            user=user_24,
-            defaults={"key": "26b85031991ac93f27b2503b1572434e1bd197f1"}
-        )
-
-        token_19, created = Token.objects.get_or_create(
-            user=user_19,
-            defaults={"key": "1b3d3e560bf56d6963e72966adeb9f6660cbd6cf"}
-        )
-
-        token_7, created = Token.objects.get_or_create(
-            user=user_7,
-            defaults={"key": "26564651837229ebaf5638e8e1e8a2674f85c233"}
-        )
-
-        token_14, created = Token.objects.get_or_create(
-            user=user_14,
-            defaults={"key": "71c4aec1b366a83895922058149c7d15f99f6376"}
-        )
-
-        token_32, created = Token.objects.get_or_create(
-            user=user_32,
-            defaults={"key": "b194c261fb7dbc1772a26d15e97c2616960bca06"}
-        )
-
-        token_36, created = Token.objects.get_or_create(
-            user=user_36,
-            defaults={"key": "518188376863180d8273acbd7ee6ed455115809e"}
-        )
-
-        token_30, created = Token.objects.get_or_create(
-            user=user_30,
-            defaults={"key": "cc45d07ab1890b7c0f30421c7f194dc59a7dab72"}
-        )
+        for user in User.objects.all():
+            Token.objects.get_or_create(user=user)
 
         # ===== CLIENTES =====
         print("👤 Creando clientes...")
