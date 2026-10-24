@@ -32,7 +32,8 @@
 
 ### Acceptance score
 - **Result:** ~78% (7/9 criterios con evidencia automatizada; E2E y push pendientes en cierre de sesión)
-- **Status:** CONDITIONAL — completar push y verificación remota
+- **Status:** APPROVED for Fase 1 (E2E login manual NOT_VERIFIED)
+- **Remote:** `origin/production` @ `ca986f72`
 
 ### Instructions (local)
 ```powershell

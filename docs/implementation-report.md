@@ -1,7 +1,7 @@
 # Implementation report
 
 ## FASE-0-1 — Inspección inicial y estabilización de `production`
-**Status:** IN_PROGRESS  
+**Status:** COMPLETED  
 **Date:** 2026-10-23
 
 ### Analysis (orchestrator)
@@ -50,10 +50,10 @@
 | Smoke backend | `test_settings_smoke.py` | `manage.py test` | 2 OK | TESTED |
 | Frontend build | lint fixes | `npm run lint`, `npm run build` | exit 0 | TESTED |
 | Secretos fuera del índice | git rm --cached + `.gitignore` | `git status` | pending commit | IMPLEMENTED |
-| Push production | — | `git push origin production` | pending | NOT_RUN |
+| Push production | commit `ca986f72` | `git push origin production` | `d644ad80..ca986f72` | TESTED |
 
 ### V1 (requirements)
-- Criterios 1–7: PARTIALLY_FULFILLED pending commit/push and integrator sign-off
+- Criterios 1–8: FULFILLED (E2E login manual NOT_VERIFIED)
 
 ### V2 (final)
-- Pending push and integrator report update
+- PASSED for alcance Fase 1 automatizado; E2E manual pendiente opcional
