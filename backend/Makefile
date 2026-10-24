@@ -32,6 +32,9 @@ docs:
 	interrogate apps config -c pyproject.toml
 
 django-check:
+	test -n "$$SECRET_KEY" || export SECRET_KEY=local-dev-only-not-for-production; \
+	if [ ! -f .env ]; then cp .env.example .env; fi; \
+	grep -q '^SECRET_KEY=.' .env || echo 'SECRET_KEY=local-dev-only-not-for-production' >> .env; \
 	python manage.py check
 	python manage.py migrate --noinput
 

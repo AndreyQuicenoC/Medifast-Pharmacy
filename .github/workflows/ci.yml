@@ -39,6 +39,7 @@ jobs:
       - name: Configurar entorno de prueba
         run: |
           cp .env.example .env
+          echo "SECRET_KEY=ci-test-only-not-for-production" >> .env
           echo "USE_SQLITE=True" >> .env
           echo "DEBUG=True" >> .env
       - name: Lint (ruff)

@@ -6,6 +6,9 @@ python -m pip install --upgrade pip
 pip install -r requirements-dev.txt
 
 Copy-Item .env.example .env -Force -ErrorAction SilentlyContinue
+if (-not (Select-String -Path .env -Pattern "SECRET_KEY=" -Quiet)) {
+    Add-Content .env "`nSECRET_KEY=local-dev-only-not-for-production"
+}
 if (-not (Select-String -Path .env -Pattern "USE_SQLITE" -Quiet)) {
     Add-Content .env "`nUSE_SQLITE=True`nDEBUG=True"
 }
