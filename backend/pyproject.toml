@@ -1,0 +1,59 @@
+[project]
+name = "medifast-pharmacy-backend"
+version = "0.1.0"
+description = "API Django — Medifast Pharmacy"
+requires-python = ">=3.13"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+
+[tool.coverage.run]
+source = ["apps", "config"]
+omit = [
+  "*/migrations/*",
+  "scripts/*",
+  "*/tests/*",
+  "*/views.py",
+  "*/serializers.py",
+  "apps/operations/estadisticas_views.py",
+]
+
+[tool.coverage.report]
+fail_under = 55
+show_missing = true
+skip_empty = true
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+src = ["apps", "config", "tests", "scripts"]
+extend-exclude = [
+  "apps/identity/views.py",
+  "apps/operations/views.py",
+  "apps/operations/estadisticas_views.py",
+  "scripts/dev",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S"]
+ignore = ["S101", "S105", "S106"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101"]
+"scripts/**/*.py" = ["S603", "S607"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.bandit]
+exclude_dirs = ["tests", "scripts/dev", ".venv", "env"]
+skips = ["B101"]
+
+[tool.interrogate]
+ignore-init-method = true
+ignore-module = true
+fail-under = 25
+exclude = ["migrations", "tests", "scripts"]

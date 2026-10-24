@@ -40,7 +40,7 @@ git push origin production
    - **Root Directory**: `backend`
    - **Runtime**: Python 3
    - **Build Command**: `build.sh` (o dejar vacío para autodetección)
-   - **Start Command**: `gunicorn DS1.wsgi:application`
+   - **Start Command**: `gunicorn config.wsgi:application`
 
 ### 5. Variables de Entorno
 

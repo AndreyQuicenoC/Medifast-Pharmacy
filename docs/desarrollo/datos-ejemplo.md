@@ -128,9 +128,9 @@ El script incluye tokens pre-generados para:
 ```bash
 # Ver resumen de datos en la BD
 python manage.py shell -c "
-from apps.users.models import User, Cliente, Rol
-from apps.products.models import Producto
-from apps.tickets.models import Servicio, Caja
+from apps.identity.models import User, Cliente, Rol
+from apps.catalog.models import Producto
+from apps.operations.models import Servicio, Caja
 print(f'Usuarios: {User.objects.count()}')
 print(f'Clientes: {Cliente.objects.count()}')
 print(f'Productos: {Producto.objects.count()}')

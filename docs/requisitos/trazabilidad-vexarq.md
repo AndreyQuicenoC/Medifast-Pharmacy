@@ -4,7 +4,7 @@ Cadena: criterio → responsabilidad → implementacion → prueba → evidencia
 
 | ID | Criterio | Capa | Implementacion | Prueba | Evidencia | Estado |
 |----|----------|------|----------------|--------|-----------|--------|
-| MOD-001 | Handler errores API | Backend | DS1/exceptions.py | test_api_exception_handler | CI | TESTED |
+| MOD-001 | Handler errores API | Backend | config/exceptions.py | tests/platform/test_exception_handler.py | CI | TESTED |
 | MOD-002 | Usuarios dev por rol | Backend | seed_dev_users | comando manual | usuarios-prueba.md | TESTED |
 | MOD-003 | CI reproducible | DevOps | ci.yml | GitHub Actions | workflow | TESTED |
 | MOD-004 | Pagina 404 | Frontend | PageNotFound.jsx | build | lint/build | TESTED |

@@ -12,7 +12,7 @@
 
 - `manage.py check`
 - `migrate --noinput`
-- Tests en `apps.users.tests.test_*`
+- Tests en `apps.identity.tests.test_*`
 - `npm run lint` (0 errores)
 - `npm run build`
 

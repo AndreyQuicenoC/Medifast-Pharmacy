@@ -28,8 +28,8 @@
 ### Backend changes
 - **Files:** `DS1/settings.py`, `.env.example`, `install-backend.ps1`, `apps/users/tests/test_settings_smoke.py`, `.gitignore`
 - **Behavior:** SQLite local vía `USE_SQLITE=True`; carga de `.env` desde `BASE_DIR`
-- **Tests:** 2 passing (`apps.users.tests.test_settings_smoke`)
-- **Commands:** `manage.py check`, `migrate --noinput`, `test apps.users.tests.test_settings_smoke`
+- **Tests:** 2 passing (`apps.identity.tests.test_settings_smoke`)
+- **Commands:** `manage.py check`, `migrate --noinput`, `test apps.identity.tests.test_settings_smoke`
 
 ### Frontend changes
 - **Files:** `App.jsx`, `api/user.api.js`, `pages/facturas.jsx`, `.env.example`

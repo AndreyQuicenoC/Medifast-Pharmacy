@@ -5,7 +5,7 @@ ID | Categoria ISO 25010 | Requisito | Implementacion | Verificacion
 RNF-001 | Mantenibilidad | Codigo modular backend/frontend | apps Django, modulos React | code-structure.md
 RNF-002 | Fiabilidad | Migraciones reproducibles | Django migrations | CI migrate
 RNF-003 | Seguridad | Secretos fuera del repo | .gitignore, .env.example | SECURITY.md, gitleaks CI
-RNF-004 | Seguridad | Errores sin stack en cliente | DS1.exceptions | test_api_exception_handler
+RNF-004 | Seguridad | Errores sin stack en cliente | config.exceptions | test_api_exception_handler
 RNF-005 | Seguridad | Limite intentos login | Throttle authtoken | settings + test
 RNF-006 | Usabilidad | Feedback carga/error UI | PageState components | lint/build
 RNF-007 | Accesibilidad | WCAG 2.2 AA objetivo | design.md, wcag doc | revision manual

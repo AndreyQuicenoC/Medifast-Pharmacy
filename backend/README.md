@@ -1,11 +1,31 @@
-# Backend Medifast
+# Backend — Medifast Pharmacy
 
-Punto de entrada Django. Documentacion completa: [docs/desarrollo/backend-instalacion.md](../docs/desarrollo/backend-instalacion.md).
+API Django 5 + DRF. Estructura y dominios: [docs/STRUCTURE.md](docs/STRUCTURE.md).
+
+## Desarrollo rapido
+
+```bash
+cp .env.example .env
+# USE_SQLITE=True en .env para SQLite local
+pip install -r requirements-dev.txt
+python manage.py migrate
+python manage.py runserver
+```
+
+## Calidad (paridad con CI)
+
+Linux / macOS:
+
+```bash
+make quality
+```
+
+Windows:
 
 ```powershell
-copy .env.example .env
-py -3.13 -m venv .venv
-.\.venv\Scripts\pip install -r requirements.txt
-.\.venv\Scripts\python manage.py migrate
-.\.venv\Scripts\python manage.py runserver
+.\scripts\quality.ps1
 ```
+
+## Scripts
+
+Ver [scripts/README.md](scripts/README.md).

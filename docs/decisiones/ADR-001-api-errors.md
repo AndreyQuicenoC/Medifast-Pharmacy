@@ -10,7 +10,7 @@ DRF devolvia errores heterogeneos. Se requiere contrato estable sin filtrar traz
 
 ## Decision
 
-`EXCEPTION_HANDLER` en `DS1.exceptions.api_exception_handler` envuelve respuestas en `{ success, error: { code, message, details } }`.
+`EXCEPTION_HANDLER` en `config.exceptions.api_exception_handler` envuelve respuestas en `{ success, error: { code, message, details } }`.
 
 ## Consecuencias
 

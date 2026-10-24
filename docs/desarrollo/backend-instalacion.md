@@ -65,7 +65,7 @@ python manage.py migrate
 python manage.py createsuperuser
 
 # Opción 2: Automático (para desarrollo)
-python create_test_admin.py
+python scripts/dev/create_test_admin.py
 ```
 
 6. **Cargar datos de ejemplo (opcional):**
@@ -84,18 +84,18 @@ python manage.py runserver
 
 ```
 backend/
-├── DS1/                    # Configuración principal de Django
-│   ├── settings.py         # Configuraciones
-│   ├── urls.py            # URLs principales
-│   └── wsgi.py            # WSGI application
-├── apps/                   # Aplicaciones Django
-│   ├── users/             # Gestión de usuarios y autenticación
-│   ├── products/          # Gestión de productos
-│   ├── tickets/           # Sistema de ventas y facturas
-│   └── admins/            # Configuraciones administrativas
-├── env/                   # Entorno virtual (se crea automáticamente)
-├── requirements.txt       # Dependencias Python
-└── manage.py             # Script de gestión Django
+├── config/                 # Proyecto Django (settings, urls, wsgi)
+├── apps/
+│   ├── identity/           # Cuentas, roles, autenticación
+│   ├── catalog/            # Productos
+│   └── operations/         # Cajas, turnos, facturas, estadísticas
+├── tests/                  # Suite modular (platform, identity, catalog, operations)
+├── scripts/                # dev | deploy | setup
+├── docs/                   # Documentación técnica del backend
+├── requirements.txt
+├── requirements-dev.txt
+├── Makefile                # Pipeline de calidad (Linux/macOS)
+└── manage.py
 ```
 
 ## 🔧 Dependencias Principales
@@ -112,7 +112,7 @@ backend/
 
 ```bash
 # Crear usuario admin de prueba
-python create_test_admin.py
+python scripts/dev/create_test_admin.py
 
 # Generar datos de estadísticas de ejemplo
 python crear_datos_estadisticas.py
@@ -241,7 +241,7 @@ python manage.py shell
 python manage.py test
 
 # Test específico
-python manage.py test apps.users.tests
+python manage.py test apps.identity.tests
 ```
 
 ## 📞 Soporte
