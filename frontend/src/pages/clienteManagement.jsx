@@ -11,8 +11,10 @@ import {
   UpdateClientPriority,
 } from "../api/user.api";
 import { PageShell } from "../components/PageState";
+import { useConfirm } from "../components/ConfirmProvider";
 
 export default function ClienteManagement() {
+  const confirm = useConfirm();
   const navigate = useNavigate();
 
   // Estados principales
@@ -319,9 +321,13 @@ export default function ClienteManagement() {
 
   // Eliminar usuario
   const handleDelete = async (id) => {
-    if (!window.confirm("¿Estás seguro de que deseas eliminar este usuario?")) {
-      return;
-    }
+    const ok = await confirm({
+      title: "Eliminar usuario",
+      message: "¿Confirma eliminar este usuario? Esta acción no se puede deshacer.",
+      confirmLabel: "Eliminar",
+      destructive: true,
+    });
+    if (!ok) return;
 
     try {
       // Buscar el usuario para determinar su rol y endpoint correcto

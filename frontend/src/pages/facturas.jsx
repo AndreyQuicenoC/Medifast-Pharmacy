@@ -1,6 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getFacturas } from "../api/facturas.api";
 import { PageShell } from "../components/PageState";
+import AdminPageLayout from "../components/AdminPageLayout";
+
+function asFacturaList(value) {
+  return Array.isArray(value) ? value : [];
+}
 
 export default function Facturas() {
   const rol = localStorage.getItem("rol");
@@ -36,101 +41,38 @@ export default function Facturas() {
     }
   }, [rol, token, currentPage]);
 
-  // Filtrar facturas por fecha
+  const facturasLista = useMemo(() => asFacturaList(facturas), [facturas]);
+
   useEffect(() => {
-    console.log("🔍 Aplicando filtro de fecha:", filtroFecha || "ninguno");
-    console.log("📊 Total facturas disponibles:", facturas.length);
-
     if (!filtroFecha) {
-      setFacturasFiltradas(facturas);
-    } else {
-      console.log("📅 Analizando fechas de facturas:");
-
-      // Log detallado de todas las fechas antes del filtrado
-      facturas.forEach((factura, index) => {
-        console.log(
-          `  Factura #${factura.id} (${index + 1}/${facturas.length}): "${
-            factura.fecha_factura
-          }"`
-        );
-      });
-
-      const facturasFiltradas = facturas.filter((factura) => {
-        try {
-          if (!factura.fecha_factura) {
-            console.log(`  ❌ Factura #${factura.id}: Sin fecha`);
-            return false;
-          }
-
-          let fechaParaComparar = "";
-
-          // El backend puede devolver fechas en formato ISO: "2025-07-22T00:05:15.066473Z"
-          // o en formato español: "22/07/2025 12:05:15 a. m."
-
-          if (factura.fecha_factura.includes("T")) {
-            // Formato ISO: "2025-07-22T00:05:15.066473Z"
-            // IMPORTANTE: Convertir a fecha local para comparar correctamente
-            const fechaObj = new Date(factura.fecha_factura);
-            const año = fechaObj.getFullYear();
-            const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
-            const dia = String(fechaObj.getDate()).padStart(2, "0");
-            fechaParaComparar = `${año}-${mes}-${dia}`;
-
-            console.log(
-              `  📅 Factura #${factura.id}: ISO "${factura.fecha_factura}" -> Local "${fechaParaComparar}"`
-            );
-          } else {
-            // Formato español: "22/07/2025 12:05:15 a. m."
-            const fechaFacturaStr = factura.fecha_factura.split(" ")[0]; // "22/07/2025"
-            const [dia, mes, año] = fechaFacturaStr.split("/");
-
-            // Convertir la fecha del filtro (formato ISO YYYY-MM-DD) a formato comparable
-            fechaParaComparar = `${año}-${mes.padStart(2, "0")}-${dia.padStart(
-              2,
-              "0"
-            )}`;
-            console.log(
-              `  📅 Factura #${factura.id}: Español "${factura.fecha_factura}" -> "${fechaParaComparar}"`
-            );
-          }
-
-          const coincide = fechaParaComparar === filtroFecha;
-          console.log(
-            `  ${coincide ? "✅" : "❌"} Factura #${
-              factura.id
-            }: "${fechaParaComparar}" ${
-              coincide ? "===" : "!=="
-            } "${filtroFecha}"`
-          );
-
-          return coincide;
-        } catch (error) {
-          console.error(
-            `❌ Error al parsear fecha de factura #${factura.id}:`,
-            error,
-            factura.fecha_factura
-          );
-          return false;
-        }
-      });
-
-      console.log(
-        `🎯 Filtrado completado: ${facturasFiltradas.length} de ${facturas.length} facturas coinciden con "${filtroFecha}"`
-      );
-
-      // Log de las facturas que SÍ coincidieron
-      if (facturasFiltradas.length > 0) {
-        console.log("✅ Facturas que coincidieron:");
-        facturasFiltradas.forEach((f) => {
-          console.log(`  - Factura #${f.id}: ${f.fecha_factura}`);
-        });
-      } else {
-        console.log("❌ Ninguna factura coincidió con el filtro");
-      }
-
-      setFacturasFiltradas(facturasFiltradas);
+      setFacturasFiltradas(facturasLista);
+      return;
     }
-  }, [filtroFecha, facturas]);
+
+    const filtradas = facturasLista.filter((factura) => {
+      try {
+        if (!factura.fecha_factura) return false;
+
+        let fechaParaComparar = "";
+        if (factura.fecha_factura.includes("T")) {
+          const fechaObj = new Date(factura.fecha_factura);
+          const año = fechaObj.getFullYear();
+          const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
+          const dia = String(fechaObj.getDate()).padStart(2, "0");
+          fechaParaComparar = `${año}-${mes}-${dia}`;
+        } else {
+          const fechaFacturaStr = factura.fecha_factura.split(" ")[0];
+          const [dia, mes, año] = fechaFacturaStr.split("/");
+          fechaParaComparar = `${año}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}`;
+        }
+        return fechaParaComparar === filtroFecha;
+      } catch {
+        return false;
+      }
+    });
+
+    setFacturasFiltradas(filtradas);
+  }, [filtroFecha, facturasLista]);
 
   const cargarFacturas = async (page = 1) => {
     try {
@@ -138,35 +80,14 @@ export default function Facturas() {
       if (page === 1) setLoading(true);
       setError(""); // Limpiar errores previos
 
-      console.log(`🔄 Cargando facturas página ${page}...`);
       const response = await getFacturas(page, pageSize);
-      console.log("📦 Facturas cargadas desde API:", response);
-      
-      setFacturas(response.results || []);
-      setTotalFacturas(response.count || 0);
+      setFacturas(asFacturaList(response.results));
+      setTotalFacturas(Number(response.count) || 0);
       setTotalPages(response.totalPages || 1);
       setCurrentPage(response.currentPage || page);
-      
-      console.log("📊 Información de paginación:", {
-        página: response.currentPage || page,
-        totalPáginas: response.totalPages || 1,
-        totalFacturas: response.count || 0,
-        facturasPágina: response.results?.length || 0
-      });
-
-      // Log detallado de fechas al cargar
-      if (response.results && response.results.length > 0) {
-        console.log("📅 Fechas de facturas en esta página:");
-        response.results.forEach((factura, index) => {
-          console.log(
-            `  ${index + 1}. Factura #${factura.id}: "${factura.fecha_factura}"`
-          );
-        });
-      }
-
       setError("");
     } catch (err) {
-      console.error("❌ Error al cargar facturas:", err);
+      console.error("Error al cargar facturas:", err);
 
       // Manejar diferentes tipos de errores
       if (err.response?.status === 401) {
@@ -406,30 +327,20 @@ export default function Facturas() {
                 <input
                   type="date"
                   value={filtroFecha}
-                  onChange={(e) => {
-                    console.log("Filtro de fecha cambiado a:", e.target.value);
-                    setFiltroFecha(e.target.value);
-                  }}
+                  onChange={(e) => setFiltroFecha(e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   max={new Date().toISOString().split("T")[0]} // No permitir fechas futuras
                   title="Seleccionar fecha para filtrar facturas"
                 />
                 <button
-                  onClick={() => {
-                    const hoy = new Date().toISOString().split("T")[0];
-                    console.log("Filtrando por hoy:", hoy);
-                    setFiltroFecha(hoy);
-                  }}
+                  onClick={() => setFiltroFecha(new Date().toISOString().split("T")[0])}
                   className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm"
                 >
                   Hoy
                 </button>
                 {filtroFecha && (
                   <button
-                    onClick={() => {
-                      console.log("Limpiando filtro de fecha");
-                      setFiltroFecha("");
-                    }}
+                    onClick={() => setFiltroFecha("")}
                     className="px-3 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
                   >
                     Limpiar
@@ -438,10 +349,7 @@ export default function Facturas() {
               </div>
 
               <button
-                onClick={() => {
-                  console.log("Botón actualizar presionado");
-                  cargarFacturas(currentPage);
-                }}
+                onClick={() => cargarFacturas(currentPage)}
                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                 disabled={loading || loadingPage}
               >
@@ -467,7 +375,7 @@ export default function Facturas() {
                 Total Facturas
               </h3>
               <p className="text-3xl font-bold text-green-600">
-                {filtroFecha ? facturasFiltradas.length : totalFacturas}
+                {filtroFecha ? asFacturaList(facturasFiltradas).length : totalFacturas}
               </p>
               <p className="text-sm text-gray-500 mt-1">
                 {filtroFecha
@@ -482,7 +390,7 @@ export default function Facturas() {
               </h3>
               <p className="text-3xl font-bold text-blue-600">
                 {formatearPrecio(
-                  facturasFiltradas.reduce(
+                  asFacturaList(facturasFiltradas).reduce(
                     (sum, f) => sum + parseFloat(f.Total || 0),
                     0
                   )
@@ -495,9 +403,9 @@ export default function Facturas() {
                 Promedio por Factura
               </h3>
               <p className="text-3xl font-bold text-purple-600">
-                {facturasFiltradas.length > 0
+                {asFacturaList(facturasFiltradas).length > 0
                   ? formatearPrecio(
-                      facturasFiltradas.reduce(
+                      asFacturaList(facturasFiltradas).reduce(
                         (sum, f) => sum + parseFloat(f.Total || 0),
                         0
                       ) / facturasFiltradas.length

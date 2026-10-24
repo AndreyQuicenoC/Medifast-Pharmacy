@@ -10,9 +10,12 @@ import {
   activarProducto,
   formatPrice,
 } from "../api/producto.api";
+import { useConfirm } from "../components/ConfirmProvider";
+import { notify } from "../utils/notify";
 
 export default function ProductosManagement() {
   const navigate = useNavigate();
+  const confirm = useConfirm();
 
   // Estado para autenticación
   const [token, setToken] = useState(null);
@@ -163,7 +166,7 @@ export default function ProductosManagement() {
 
     // Validación básica
     if (!formData.Nombre || !formData.Marca || !formData.Tipo) {
-      alert("Por favor complete los campos obligatorios");
+      notify.error("Por favor complete los campos obligatorios");
       return;
     }
 
@@ -174,8 +177,8 @@ export default function ProductosManagement() {
 
       // Validar que el stock no sea negativo
       if (stockFinal < 0) {
-        alert(
-          `No se puede reducir el stock por debajo de 0. Stock actual: ${stockOriginal}, intentando reducir: ${stockDisminucion}`
+        notify.error(
+          `No se puede reducir el stock por debajo de 0. Stock actual: ${stockOriginal}, intentando reducir: ${stockDisminucion}`,
         );
         return;
       }
@@ -190,10 +193,8 @@ export default function ProductosManagement() {
     const result = await saveProducto(dataToSave, editingId, token);
 
     if (result.success) {
-      alert(
-        editingId
-          ? "Producto actualizado con éxito"
-          : "Producto creado con éxito"
+      notify.success(
+        editingId ? "Producto actualizado con éxito" : "Producto creado con éxito",
       );
       loadProductos(token);
       setShowForm(false);
@@ -203,31 +204,29 @@ export default function ProductosManagement() {
       setStockDisminucion(0);
       setStockOriginal(0);
     } else {
-      alert(`Error al guardar el producto: ${result.error}`);
+      notify.error(`Error al guardar el producto: ${result.error}`);
     }
   };
 
   // Eliminar producto (usa el endpoint de borrado lógico)
   const handleDelete = async (id) => {
-    if (
-      window.confirm(
-        "¿Está seguro que desea eliminar este producto? Esta acción lo desactivará."
-      )
-    ) {
-      const result = await desactivarProducto(id, token);
+    const ok = await confirm({
+      title: "Desactivar producto",
+      message: "¿Confirma desactivar este producto? Podrá reactivarlo después.",
+      confirmLabel: "Desactivar",
+      destructive: true,
+    });
+    if (!ok) return;
+    const result = await desactivarProducto(id, token);
 
-      if (result.success) {
-        loadProductos(token);
-
-        // Si el producto eliminado estaba seleccionado, deseleccionarlo
-        if (selectedProducto && selectedProducto.id === id) {
-          setSelectedProducto(null);
-        }
-
-        alert("Producto desactivado con éxito");
-      } else {
-        alert(result.error);
+    if (result.success) {
+      loadProductos(token);
+      if (selectedProducto && selectedProducto.id === id) {
+        setSelectedProducto(null);
       }
+      notify.success("Producto desactivado con éxito");
+    } else {
+      notify.error(result.error);
     }
   };
 
@@ -237,9 +236,9 @@ export default function ProductosManagement() {
 
     if (result.success) {
       loadProductos(token);
-      alert("Producto activado con éxito");
+      notify.success("Producto activado con éxito");
     } else {
-      alert(result.error);
+      notify.error(result.error);
     }
   };
 

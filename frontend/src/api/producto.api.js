@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getApiErrorMessage } from "../utils/apiError";
+import { extractList } from "./listUtils.js";
 
 // API URL constante
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
@@ -26,10 +27,7 @@ export const fetchProductos = async (authToken) => {
         Authorization: `Token ${authToken}`,
       },
     });
-    console.log("Respuesta de productos:", response.data);
-    // Manejar respuesta paginada del backend
-    const productos = response.data.results || response.data;
-    return { data: productos, error: null };
+    return { data: extractList(response.data), error: null };
   } catch (err) {
     console.error("Error al cargar productos:", err);
     return {

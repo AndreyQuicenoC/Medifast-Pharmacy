@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getApiErrorMessage } from "../utils/apiError";
+import { notify } from "../utils/notify";
 import medifastLogo from "../assets/medifast_logo.png";
 
 export default function Login() {
@@ -65,20 +66,20 @@ export default function Login() {
         navigate("/pedir-turno");
       } else {
         // Usuario sin rol específico
-        alert("Usuario sin rol asignado. Contacte al administrador.");
+        notify.error("Usuario sin rol asignado. Contacte al administrador.");
       }
     } catch (error) {
       console.error("Error de login:", error);
 
       if (error.code === "ECONNREFUSED" || !error.response) {
-        alert(
-          "No se puede conectar al servidor. Verifique que el backend este en ejecucion."
+        notify.error(
+          "No se puede conectar al servidor. Verifique que el backend este en ejecucion.",
         );
         return;
       }
 
-      alert(
-        `Error al iniciar sesion: ${getApiErrorMessage(error, "Credenciales invalidas")}`
+      notify.error(
+        `Error al iniciar sesion: ${getApiErrorMessage(error, "Credenciales invalidas")}`,
       );
     }
   };

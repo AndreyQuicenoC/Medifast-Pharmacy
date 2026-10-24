@@ -13,6 +13,8 @@ import {
   cancelarTurno,
   getTurnoActualGlobal,
 } from "../api/turno.api";
+import { useConfirm } from "../components/ConfirmProvider";
+import { notify } from "../utils/notify";
 
 const images = [
   imgPR_ViernesPastillaton,
@@ -40,6 +42,7 @@ const messages = [
 
 export default function Turno() {
   const navigate = useNavigate();
+  const confirm = useConfirm();
 
   const [imageIndex, setImageIndex] = useState(0);
   const [messageIndex, setMessageIndex] = useState(0);
@@ -213,7 +216,7 @@ export default function Turno() {
     }
 
     if (!cedula) {
-      alert("Error: No se pudo obtener información del usuario");
+      notify.error("Error: No se pudo obtener información del usuario");
       navigate("/");
       return;
     }
@@ -304,19 +307,20 @@ export default function Turno() {
   const handleCancelarTurno = async () => {
     if (!turnoCliente) return;
 
-    const confirmacion = window.confirm(
-      "¿Estás seguro de que deseas cancelar tu turno? Esta acción no se puede deshacer."
-    );
-
-    if (confirmacion) {
-      try {
-        await cancelarTurno(turnoCliente.id);
-        alert("Turno cancelado exitosamente");
-        navigate("/pedir-turno");
-      } catch (error) {
-        alert("Error al cancelar el turno. Intenta nuevamente.");
-        console.error("Error:", error);
-      }
+    const ok = await confirm({
+      title: "Cancelar turno",
+      message: "¿Estás seguro? Esta acción no se puede deshacer.",
+      confirmLabel: "Cancelar turno",
+      destructive: true,
+    });
+    if (!ok) return;
+    try {
+      await cancelarTurno(turnoCliente.id);
+      notify.success("Turno cancelado exitosamente");
+      navigate("/pedir-turno");
+    } catch (error) {
+      notify.error("Error al cancelar el turno. Intenta nuevamente.");
+      console.error("Error:", error);
     }
   };
 
@@ -370,7 +374,7 @@ export default function Turno() {
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="font-semibold text-blue-800">
-                  👤 Bienvenido, {clienteInfo.nombre} {clienteInfo.apellido}
+                  Bienvenido, {clienteInfo.nombre} {clienteInfo.apellido}
                 </h3>
                 <p className="text-sm text-blue-600">CC: {clienteInfo.cedula}</p>
               </div>
@@ -578,7 +582,7 @@ export default function Turno() {
                           🔄 Atendiendo turno #{caja.turno_actual.numero_turno}
                         </p>
                         <p className="text-gray-600">
-                          👤 {caja.turno_actual.cliente.nombre}{" "}
+                          {caja.turno_actual.cliente.nombre}{" "}
                           {caja.turno_actual.cliente.apellido}
                         </p>
                         <p className="text-gray-600">

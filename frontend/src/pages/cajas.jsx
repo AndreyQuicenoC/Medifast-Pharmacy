@@ -10,8 +10,13 @@ import {
   DesactivarCaja,
 } from "../api/caja.api";
 import { PageShell } from "../components/PageState";
+import { useConfirm } from "../components/ConfirmProvider";
+import { notify } from "../utils/notify";
+import AdminPageLayout from "../components/AdminPageLayout";
+import { IconAdminCajas } from "../components/AdminModuleIcons";
 
 export default function CajasView() {
+  const confirm = useConfirm();
   // Estados
   const [cajas, setCajas] = useState([]);
   const [usuariosDisponibles, setUsuariosDisponibles] = useState([]);
@@ -31,16 +36,10 @@ export default function CajasView() {
 
   // Cargar datos al iniciar
   useEffect(() => {
-    console.log("Rol del usuario:", rol);
-    console.log("Token disponible:", !!token);
-    console.log("Token value:", token);
-
     if (rol === "administrador" && token) {
       fetchCajas();
       fetchUsuarios();
       fetchTodosLosEmpleados();
-    } else {
-      console.log("No se cargan datos - rol o token inválido");
     }
   }, [rol, token]);
 
@@ -59,8 +58,6 @@ export default function CajasView() {
   const fetchCajas = async () => {
     try {
       const cajas = await GetAllCajas();
-      console.log("Datos de cajas recibidos:", cajas);
-      
       // Verificar que tenemos un array
       if (!Array.isArray(cajas)) {
         console.error("Los datos de cajas recibidos no son un array:", cajas);
@@ -78,11 +75,7 @@ export default function CajasView() {
   // Obtener usuarios disponibles (solo empleados no asignados)
   const fetchUsuarios = async () => {
     try {
-      console.log("Obteniendo usuarios disponibles...");
-      console.log("Token en localStorage:", localStorage.getItem("authToken"));
       const usuarios = await GetUsuariosDisponibles();
-      console.log("Usuarios disponibles obtenidos:", usuarios);
-      
       // Verificar que tenemos un array
       if (!Array.isArray(usuarios)) {
         console.error("Los datos de usuarios recibidos no son un array:", usuarios);
@@ -100,10 +93,7 @@ export default function CajasView() {
   // Obtener todos los empleados (para el formulario de edición)
   const fetchTodosLosEmpleados = async () => {
     try {
-      console.log("Obteniendo todos los empleados...");
       const empleados = await GetTodosLosEmpleados();
-      console.log("Todos los empleados obtenidos:", empleados);
-      
       // Verificar que tenemos un array
       if (!Array.isArray(empleados)) {
         console.error("Los datos de empleados recibidos no son un array:", empleados);
@@ -132,8 +122,6 @@ export default function CajasView() {
       finalValue = value;
     }
 
-    console.log(`Campo ${name} cambió a:`, finalValue); // Para debug
-
     setFormData({
       ...formData,
       [name]: finalValue,
@@ -153,7 +141,6 @@ export default function CajasView() {
 
   // Mostrar formulario para editar
   const handleShowEditForm = (caja) => {
-    console.log("Editando caja:", caja); // Para debug
     setEditingId(caja.id);
     setFormData({
       nombre: caja.nombre || "",
@@ -179,7 +166,7 @@ export default function CajasView() {
 
       // Validar que el nombre no esté vacío
       if (!dataToSend.nombre) {
-        alert("El nombre de la caja es requerido");
+        notify.error("El nombre de la caja es requerido");
         return;
       }
 
@@ -191,19 +178,10 @@ export default function CajasView() {
         dataToSend.ID_Usuario = parseInt(formData.ID_Usuario);
       }
 
-      console.log("Datos a enviar:", dataToSend); // Para debug
-      console.log("Tipo de ID_Usuario:", typeof dataToSend.ID_Usuario); // Para debug
-
       if (editingId) {
-        // Actualizar caja existente
-        console.log("Actualizando caja ID:", editingId);
-        const response = await UpdateCaja(editingId, dataToSend);
-        console.log("Respuesta del servidor:", response.data);
+        await UpdateCaja(editingId, dataToSend);
       } else {
-        // Crear nueva caja
-        console.log("Creando nueva caja");
-        const response = await CreateCaja(dataToSend);
-        console.log("Respuesta del servidor:", response.data);
+        await CreateCaja(dataToSend);
       }
       // Recargar datos
       fetchCajas();
@@ -212,7 +190,7 @@ export default function CajasView() {
       // Cerrar formulario
       setShowForm(false);
       setEditingId(null);
-      alert("Caja guardada con éxito");
+      notify.success("Caja guardada con éxito");
     } catch (error) {
       console.error("Error al guardar caja:", error);
       console.error("Response status:", error.response?.status); // Para debug
@@ -235,23 +213,28 @@ export default function CajasView() {
         }
       }
 
-      alert(errorMessage);
+      notify.error(errorMessage);
     }
   };
 
   // Eliminar caja
   const handleDelete = async (id) => {
-    if (window.confirm("¿Está seguro que desea eliminar esta caja?")) {
-      try {
-        await DeleteCaja(id);
-        fetchCajas();
-        fetchUsuarios();
-        fetchTodosLosEmpleados();
-        alert("Caja eliminada con éxito");
-      } catch (error) {
-        console.error("Error al eliminar caja:", error);
-        alert("Error al eliminar la caja");
-      }
+    const ok = await confirm({
+      title: "Eliminar caja",
+      message: "¿Confirma que desea eliminar esta caja? Esta acción no se puede deshacer.",
+      confirmLabel: "Eliminar",
+      destructive: true,
+    });
+    if (!ok) return;
+    try {
+      await DeleteCaja(id);
+      fetchCajas();
+      fetchUsuarios();
+      fetchTodosLosEmpleados();
+      notify.success("Caja eliminada con éxito");
+    } catch (error) {
+      console.error("Error al eliminar caja:", error);
+      notify.error("Error al eliminar la caja");
     }
   };
 
@@ -266,101 +249,82 @@ export default function CajasView() {
       fetchCajas();
     } catch (error) {
       console.error("Error al cambiar estado de caja:", error);
-      alert("Error al cambiar el estado de la caja");
+      notify.error("Error al cambiar el estado de la caja");
     }
   };
 
   return (
     <PageShell loading={loading} loadingMessage="Cargando cajas...">
-    <main className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
-      {/* Contenedor principal con diseño responsive de 2 columnas */}
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Columna izquierda - Lista de cajas */}
-        <div className="flex-1 bg-white rounded-xl shadow p-4 md:p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">Gestión de Cajas</h1>
-            <button
-              onClick={handleShowCreateForm}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium"
-            >
-              Nueva Caja
-            </button>
-          </div>
-
-          {/* Lista de cajas */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <AdminPageLayout
+      title="Gestión de cajas"
+      subtitle="Asignación de cajeros y estado de mostrador"
+      action={
+        <button type="button" onClick={handleShowCreateForm} className="btn-primary min-h-[2.75rem] px-4 py-2.5 text-sm">
+          Nueva caja
+        </button>
+      }
+    >
+      <div className="flex flex-col gap-6 lg:flex-row">
+        <div className="flex-1">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {cajas.length > 0 ? (
               cajas.map((caja) => (
-                <div
+                <article
                   key={caja.id}
-                  className={`flex items-center border rounded-lg p-4 shadow hover:shadow-md transition ${
-                    !caja.Estado ? "bg-gray-100" : "bg-white"
+                  className={`rounded-xl border p-4 transition hover:shadow-md ${
+                    caja.Estado ? "border-emerald-100 bg-white" : "border-gray-200 bg-gray-50 opacity-90"
                   }`}
                 >
-                  {/* Ícono de usuario */}
-                  <div className="w-1/4 flex justify-center items-center">
-                    <div className="border rounded-full h-16 w-16 flex justify-center items-center text-2xl">
-                      👤
+                  <div className="flex gap-4">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-800">
+                      <IconAdminCajas className="h-7 w-7" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <h2 className="text-lg font-semibold text-[var(--color-text)]">
+                          {caja.nombre || `Caja ${caja.id}`}
+                        </h2>
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                            caja.Estado ? "bg-emerald-100 text-emerald-800" : "bg-gray-200 text-gray-700"
+                          }`}
+                        >
+                          {caja.Estado ? "Activa" : "Inactiva"}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+                        Cajero:{" "}
+                        {caja.usuario
+                          ? `${caja.usuario.first_name} ${caja.usuario.last_name}`
+                          : "Sin asignar"}
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <button type="button" onClick={() => handleShowEditForm(caja)} className="btn-secondary min-h-[2.5rem] flex-1 py-2 text-xs">
+                          Editar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleEstado(caja.id, caja.Estado)}
+                          className="min-h-[2.5rem] flex-1 rounded-lg bg-amber-100 py-2 text-xs font-semibold text-amber-900 hover:bg-amber-200"
+                        >
+                          {caja.Estado ? "Desactivar" : "Activar"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(caja.id)}
+                          className="min-h-[2.5rem] flex-1 rounded-lg bg-red-700 py-2 text-xs font-semibold text-white hover:bg-red-800"
+                        >
+                          Eliminar
+                        </button>
+                      </div>
                     </div>
                   </div>
-
-                  {/* Info de la caja */}
-                  <div className="flex-1 ml-4 w-80">
-                    <div className="flex justify-between items-center mb-2">
-                      <button className="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-lg inline-block w-3/4">
-                        Caja {caja.nombre || caja.id}
-                      </button>
-                      <span
-                        className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
-                          caja.Estado
-                            ? "bg-green-100 text-green-800"
-                            : "bg-gray-200 text-gray-800"
-                        }`}
-                      >
-                        {caja.Estado ? "Activa" : "Inactiva"}
-                      </span>
-                    </div>
-
-                    {/* Nombre del usuario */}
-                    <div className="font-semibold">Cajero:</div>
-                    <div className="mb-3">
-                      {caja.usuario
-                        ? `${caja.usuario.first_name} ${caja.usuario.last_name}`
-                        : "Sin asignar"}
-                    </div>
-
-                    {/* Botones de acción */}
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleShowEditForm(caja)}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex-1"
-                      >
-                        Editar
-                      </button>
-                      <button
-                        onClick={() => handleToggleEstado(caja.id, caja.Estado)}
-                        className={`${
-                          caja.Estado
-                            ? "bg-yellow-500 hover:bg-yellow-600"
-                            : "bg-green-500 hover:bg-green-600"
-                        } text-white px-3 py-1 rounded text-sm flex-1`}
-                      >
-                        {caja.Estado ? "Desactivar" : "Activar"}
-                      </button>
-                      <button
-                        onClick={() => handleDelete(caja.id)}
-                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm flex-1"
-                      >
-                        Eliminar
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                </article>
               ))
             ) : (
-              <div className="col-span-2 text-center py-8 text-gray-500">
-                No hay cajas disponibles. ¡Agrega una nueva caja!
-              </div>
+              <p className="col-span-2 py-8 text-center text-[var(--color-text-muted)]">
+                No hay cajas registradas. Crea la primera con el botón superior.
+              </p>
             )}
           </div>
         </div>
@@ -399,34 +363,16 @@ export default function CajasView() {
                   className="border rounded px-3 py-2 w-full"
                 >
                   <option value="">-- Sin asignar --</option>
-                  {/* Mostrar empleados disponibles para crear, todos los empleados para editar */}
-                  {/* DEBUG: Información de empleados */}
-                  {console.log("=== DROPDOWN DEBUG ===")}
-                  {console.log("EditingId:", editingId)}
-                  {console.log(
-                    "UsuariosDisponibles length:",
-                    usuariosDisponibles.length
-                  )}
-                  {console.log(
-                    "UsuariosDisponibles data:",
-                    usuariosDisponibles
-                  )}
-                  {console.log(
-                    "TodosLosEmpleados length:",
-                    todosLosEmpleados.length
-                  )}
-                  {console.log("TodosLosEmpleados data:", todosLosEmpleados)}
-                  {console.log(
-                    "Array a usar:",
-                    editingId ? todosLosEmpleados : usuariosDisponibles
-                  )}
                   {(editingId ? todosLosEmpleados : usuariosDisponibles).map(
-                    (empleado) => (
-                      <option key={empleado.id} value={empleado.id}>
-                        {empleado.first_name} {empleado.last_name} (CC:{" "}
-                        {empleado.cc})
-                      </option>
-                    )
+                    (empleado) => {
+                      const user = empleado.user || empleado;
+                      const id = empleado.ID_Usuario ?? user.id ?? empleado.id;
+                      return (
+                        <option key={id} value={id}>
+                          {user.first_name} {user.last_name} (CC: {user.cc})
+                        </option>
+                      );
+                    },
                   )}
                 </select>
               </div>
@@ -462,7 +408,7 @@ export default function CajasView() {
           </div>
         )}
       </div>
-    </main>
+    </AdminPageLayout>
     </PageShell>
   );
 }

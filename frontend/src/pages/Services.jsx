@@ -10,9 +10,13 @@ import {
   ActivateServicio,
   DeleteServicioPermanent,
 } from "../api/servicio.api";
+import { useConfirm } from "../components/ConfirmProvider";
+import { notify } from "../utils/notify";
+import AdminPageLayout from "../components/AdminPageLayout";
 
 export default function ServicioEditor() {
   const navigate = useNavigate();
+  const confirm = useConfirm();
   const [authorized, setAuthorized] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showInactive, setShowInactive] = useState(false); // Estado para mostrar/ocultar servicios inactivos
@@ -54,7 +58,6 @@ export default function ServicioEditor() {
     try {
       setLoading(true);
       const serviciosData = await GetAllServicios();
-      console.log("Datos de servicios recibidos:", serviciosData);
 
       // Verificar que tenemos un array
       if (!Array.isArray(serviciosData)) {
@@ -133,11 +136,11 @@ export default function ServicioEditor() {
       if (editingId) {
         // Actualizar servicio existente
         await UpdateServicio(editingId, formData);
-        alert("Servicio actualizado con éxito");
+        notify.success("Servicio actualizado con éxito");
       } else {
         // Crear nuevo servicio
         await CreateServicio(formData);
-        alert("Servicio creado con éxito");
+        notify.success("Servicio creado con éxito");
       }
       // Recargar datos
       fetchServicios();
@@ -146,59 +149,70 @@ export default function ServicioEditor() {
       setEditingId(null);
     } catch (error) {
       console.error("Error al guardar servicio:", error);
-      alert(
+      notify.error(
         `Error al guardar el servicio: ${
           error.response?.data?.detail || error.message
-        }`
+        }`,
       );
     }
   };
 
   // Desactivar servicio
   const handleDeactivate = async (id) => {
-    if (window.confirm("¿Está seguro que desea desactivar este servicio?")) {
-      try {
-        await DeactivateServicio(id);
-        fetchServicios();
-        alert("Servicio desactivado con éxito");
-      } catch (error) {
-        console.error("Error al desactivar servicio:", error);
-        alert("Error al desactivar el servicio");
-      }
+    const ok = await confirm({
+      title: "Desactivar servicio",
+      message: "¿Desea desactivar este servicio?",
+      confirmLabel: "Desactivar",
+      destructive: true,
+    });
+    if (!ok) return;
+    try {
+      await DeactivateServicio(id);
+      fetchServicios();
+      notify.success("Servicio desactivado con éxito");
+    } catch (error) {
+      console.error("Error al desactivar servicio:", error);
+      notify.error("Error al desactivar el servicio");
     }
   };
 
-  // Activar servicio
   const handleActivate = async (id) => {
-    if (window.confirm("¿Está seguro que desea activar este servicio?")) {
-      try {
-        await ActivateServicio(id);
-        fetchServicios();
-        alert("Servicio activado con éxito");
-      } catch (error) {
-        console.error("Error al activar servicio:", error);
-        alert("Error al activar el servicio");
-      }
+    const ok = await confirm({
+      title: "Activar servicio",
+      message: "¿Desea activar este servicio nuevamente?",
+      confirmLabel: "Activar",
+    });
+    if (!ok) return;
+    try {
+      await ActivateServicio(id);
+      fetchServicios();
+      notify.success("Servicio activado con éxito");
+    } catch (error) {
+      console.error("Error al activar servicio:", error);
+      notify.error("Error al activar el servicio");
     }
   };
 
-  // Eliminar servicio permanentemente
   const handleDelete = async (id) => {
-    if (window.confirm("¿Está seguro que desea eliminar este servicio?")) {
-      try {
-        await DeleteServicioPermanent(id);
-        fetchServicios();
-        alert("Servicio eliminado con éxito");
-        // Si el servicio eliminado era el seleccionado, deseleccionarlo
-        if (selectedServicio && selectedServicio.id === id) {
-          setSelectedServicio(null);
-        }
-      } catch (error) {
-        console.error("Error al eliminar servicio:", error);
-        alert(
-          "Error al eliminar el servicio. Puede que existan registros relacionados que impidan su eliminación."
-        );
+    const ok = await confirm({
+      title: "Eliminar servicio",
+      message: "Esta acción es permanente. ¿Continuar?",
+      confirmLabel: "Eliminar",
+      destructive: true,
+    });
+    if (!ok) return;
+    try {
+      await DeleteServicioPermanent(id);
+      fetchServicios();
+      notify.success("Servicio eliminado con éxito");
+      if (selectedServicio && selectedServicio.id === id) {
+        setSelectedServicio(null);
       }
+    } catch (error) {
+      console.error("Error al eliminar servicio:", error);
+      notify.error(
+        "Error al eliminar el servicio. Puede que existan registros relacionados.",
+      );
     }
   };
 
@@ -226,32 +240,27 @@ export default function ServicioEditor() {
       onRetry={fetchServicios}
       loadingMessage="Cargando servicios..."
     >
-    <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
-      {/* Contenedor principal con diseño responsive de 2 columnas */}
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Columna izquierda - Lista de servicios */}
-        <div className="flex-1 bg-white rounded-xl shadow p-4 md:p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold">Gestión de Servicios</h2>
-            <div className="flex gap-2">
-              <Button
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg"
-                onClick={handleShowCreateForm}
-              >
-                Nuevo Servicio
-              </Button>
-              <Button
-                className={`px-4 py-2 ${
-                  showInactive
-                    ? "bg-purple-600 hover:bg-purple-700"
-                    : "bg-yellow-600 hover:bg-yellow-700"
-                } text-white rounded-lg`}
-                onClick={() => setShowInactive(!showInactive)}
-              >
-                {showInactive ? "Ocultar inactivos" : "Mostrar inactivos"}
-              </Button>
-            </div>
-          </div>
+    <AdminPageLayout
+      title="Gestión de servicios"
+      subtitle="Catálogo de atención en mostrador y consultorio"
+      action={
+        <div className="flex flex-wrap gap-2">
+          <Button className="btn-primary min-h-[2.75rem] px-4 py-2.5 text-sm" onClick={handleShowCreateForm}>
+            Nuevo servicio
+          </Button>
+          <Button
+            className={`min-h-[2.75rem] rounded-lg px-4 py-2.5 text-sm font-semibold text-white ${
+              showInactive ? "bg-violet-700 hover:bg-violet-800" : "bg-amber-600 hover:bg-amber-700"
+            }`}
+            onClick={() => setShowInactive(!showInactive)}
+          >
+            {showInactive ? "Ocultar inactivos" : "Mostrar inactivos"}
+          </Button>
+        </div>
+      }
+    >
+      <div className="flex flex-col gap-6 lg:flex-row">
+        <div className="flex-1">
 
           {/* Lista de servicios */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -525,7 +534,7 @@ export default function ServicioEditor() {
           </div>
         )}
       </div>
-    </div>
+    </AdminPageLayout>
     </PageShell>
   );
 }

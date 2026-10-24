@@ -6,6 +6,9 @@ import {
   getTurnoActivoCliente,
 } from "../api/turno.api";
 import { PageShell } from "../components/PageState";
+import { IconInfo, IconService } from "../components/icons";
+import { notify } from "../utils/notify";
+import AdminPageLayout from "../components/AdminPageLayout";
 
 export default function PedirTurno() {
   const navigate = useNavigate();
@@ -23,7 +26,7 @@ export default function PedirTurno() {
     async (cedula) => {
       try {
         const response = await getTurnoActivoCliente(cedula);
-        if (response.tiene_turno) {
+        if (response?.tiene_turno) {
           // Si ya tiene turno, redirigir a la página de turnos
           navigate("/turnos");
         }
@@ -38,7 +41,7 @@ export default function PedirTurno() {
     try {
       setLoading(true);
       const serviciosData = await getServicios();
-      setServicios(serviciosData);
+      setServicios(Array.isArray(serviciosData) ? serviciosData : []);
     } catch (error) {
       setError("Error al cargar los servicios disponibles");
       console.error("Error:", error);
@@ -55,7 +58,7 @@ export default function PedirTurno() {
 
     // Solo permitir acceso a clientes autenticados
     if (!authToken || !isClient) {
-      navigate("/");
+      navigate("/login");
       return;
     }
 
@@ -87,22 +90,23 @@ export default function PedirTurno() {
 
     try {
       const response = await crearTurno(
-        servicioSeleccionado,
+        Number(servicioSeleccionado),
         clienteInfo.cedula
       );
 
-      if (response.success) {
-        // Guardar información del turno en localStorage
-        localStorage.setItem("turno_actual", JSON.stringify(response.turno));
-
-        // Mostrar mensaje de éxito y redirigir
-        alert(
-          `¡Turno creado exitosamente!\nNúmero de turno: ${response.turno.numero_turno}`
-        );
-        navigate("/turnos");
-      } else {
-        setError(response.message || "Error al crear el turno");
+      if (response?.success === false) {
+        setError(response.message || "No se pudo crear el turno");
+        return;
       }
+      if (response?.turno) {
+        localStorage.setItem("turno_actual", JSON.stringify(response.turno));
+      }
+      notify.success(
+        response?.turno?.numero_turno
+          ? `Turno creado. Número: ${response.turno.numero_turno}`
+          : response?.message || "Turno solicitado correctamente",
+      );
+      navigate("/turnos");
     } catch (error) {
       if (error.response && error.response.data) {
         setError(error.response.data.message || "Error al crear el turno");
@@ -115,50 +119,27 @@ export default function PedirTurno() {
     }
   };
 
-  const getIconoServicio = (nombreServicio) => {
-    const nombre = nombreServicio.toLowerCase();
-    if (nombre.includes("urgencia")) return "🚨";
-    if (nombre.includes("adulto mayor")) return "👴";
-    if (nombre.includes("consulta")) return "🩺";
-    if (nombre.includes("inyecc")) return "💉";
-    if (nombre.includes("signos")) return "📊";
-    return "🏥";
-  };
-
   const getPrioridadTexto = (prioridad) => {
     return prioridad === 1 ? "Prioritario" : "Normal";
   };
 
   return (
     <PageShell loading={loading} loadingMessage="Cargando servicios...">
-    <div className="min-h-screen bg-gray-50 py-8 rounded-xl mx-auto">
-      <div className="max-w-4xl mx-auto px-4">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800">
-                Solicitar Turno
-              </h1>
-              <p className="text-gray-600 mt-2">
-                Selecciona el servicio que necesitas
-              </p>
-            </div>
-            {clienteInfo && (
-              <div className="text-right">
-                <p className="text-lg font-semibold text-green-600">
-                  {clienteInfo.nombre} {clienteInfo.apellido}
-                </p>
-                <p className="text-sm text-gray-500">
-                  CC: {clienteInfo.cedula}
-                </p>
-              </div>
-            )}
+    <AdminPageLayout
+      title="Solicitar turno"
+      subtitle="Selecciona un servicio (máximo uno activo)"
+      backTo="/turnos"
+      action={
+        clienteInfo ? (
+          <div className="text-right text-sm">
+            <p className="font-semibold text-emerald-800">
+              {clienteInfo.nombre} {clienteInfo.apellido}
+            </p>
+            <p className="text-[var(--color-text-muted)]">CC {clienteInfo.cedula}</p>
           </div>
-        </div>
-
-        {/* Formulario */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        ) : null
+      }
+    >
           <form onSubmit={handleSubmit}>
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">
@@ -190,8 +171,8 @@ export default function PedirTurno() {
                       className="sr-only"
                     />
                     <div className="flex items-start">
-                      <span className="text-2xl mr-3">
-                        {getIconoServicio(servicio.Nombre)}
+                      <span className="mr-3 text-emerald-700">
+                        <IconService name={servicio.Nombre} />
                       </span>
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-800 mb-1">
@@ -218,8 +199,9 @@ export default function PedirTurno() {
 
             {/* Información adicional */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-              <h3 className="font-semibold text-blue-800 mb-2">
-                📋 Información importante
+              <h3 className="mb-2 flex items-center gap-2 font-semibold text-blue-800">
+                <IconInfo className="h-5 w-5" />
+                Información importante
               </h3>
               <ul className="text-sm text-blue-700 space-y-1">
                 <li>
@@ -237,17 +219,17 @@ export default function PedirTurno() {
               <button
                 type="button"
                 onClick={() => navigate("/turnos")}
-                className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition duration-200"
+                className="btn-secondary min-h-[2.75rem] flex-1 py-2.5"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={creandoTurno || !servicioSeleccionado}
-                className={`flex-1 font-bold py-3 px-6 rounded-lg transition duration-200 ${
+                className={`min-h-[2.75rem] flex-1 rounded-lg py-2.5 text-sm font-semibold transition ${
                   creandoTurno || !servicioSeleccionado
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-green-600 hover:bg-green-700 text-white"
+                    ? "cursor-not-allowed bg-gray-200 text-gray-500"
+                    : "btn-primary"
                 }`}
               >
                 {creandoTurno ? (
@@ -261,14 +243,10 @@ export default function PedirTurno() {
               </button>
             </div>
           </form>
-        </div>
-
-        {/* Footer informativo */}
-        <div className="mt-6 text-center text-sm text-gray-500">
-          <p>¿Necesitas ayuda? Contacta con el personal de recepción</p>
-        </div>
-      </div>
-    </div>
+        <p className="mt-4 text-center text-xs text-[var(--color-text-muted)]">
+          ¿Necesitas ayuda? Acércate a recepción.
+        </p>
+    </AdminPageLayout>
     </PageShell>
   );
 }

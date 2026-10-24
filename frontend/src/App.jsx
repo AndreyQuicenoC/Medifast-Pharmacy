@@ -4,7 +4,10 @@ import PageNotFound from "./pages/PageNotFound";
 import Proyecto from "./pages/Proyecto";
 import KeyboardShortcutsHelp from "./components/KeyboardShortcutsHelp";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
-import fondoClaro from "./assets/FondoClaro.jpg";
+import AppBackground from "./components/AppBackground";
+import { ConfirmProvider } from "./components/ConfirmProvider";
+import Home from "./pages/Home";
+import SobreNosotros from "./pages/SobreNosotros";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import SelectorService from "./pages/Services";
@@ -29,16 +32,17 @@ function App() {
   const { helpOpen, setHelpOpen } = useKeyboardShortcuts({ onFocusMain: focusMain });
 
   return (
-    <div
-      className="min-h-screen bg-gray-300 flex flex-col bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: `url(${fondoClaro})` }}
-    >
+    <div className="relative flex min-h-screen flex-col">
       <BrowserRouter>
+        <ConfirmProvider>
+        <AppBackground />
         <Header />
 
         <KeyboardShortcutsHelp open={helpOpen} onClose={() => setHelpOpen(false)} />
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/sobre-nosotros" element={<SobreNosotros />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin" element={<AdminDashboard />} />
@@ -56,8 +60,9 @@ function App() {
           <Route path="/proyecto" element={<Proyecto />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
-        <Toaster />
+        <Toaster position="top-right" toastOptions={{ className: "text-sm" }} />
         <Footer />
+        </ConfirmProvider>
       </BrowserRouter>
     </div>
   );
