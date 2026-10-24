@@ -255,6 +255,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
     'EXCEPTION_HANDLER': 'DS1.exceptions.api_exception_handler',
+    'DEFAULT_THROTTLE_RATES': {
+        'login': os.getenv('LOGIN_THROTTLE', '10/min'),
+    },
 }
 
 # Logging configuration

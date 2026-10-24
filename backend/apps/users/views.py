@@ -15,6 +15,7 @@ from .serializers import (cc_client, admin_password, obtener_creacion_actualizac
                           UserSerializer, RolSerializer, AdministradorSerializer, EmpleadoSerializer)
 from apps.tickets.models import Turno
 from apps.tickets.serializers import Turnos_de_un_cliente
+from .throttles import LoginRateThrottle
 
 class EmpleadoViewSet(viewsets.ModelViewSet):
     
@@ -496,6 +497,8 @@ class ClienteViewSet(viewsets.ModelViewSet):
             return Response({'error': 'Cliente no encontrado'}, status=403)
 
 class CustomAuthToken(ObtainAuthToken):
+    throttle_classes = [LoginRateThrottle]
+
     def post(self, request, *args, **kwargs):
         cc = request.data.get('cc')
         password = request.data.get('password')

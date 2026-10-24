@@ -1,36 +1,54 @@
 # Documento de arquitectura de software (SAD)
 
-## Contexto
+Version: 1.1 | Rama: modernizacion | Fecha: 2026-10-23
 
-Monorepo Medifast Pharmacy: API Django REST + SPA React (Vite). Despliegue historico en Render (backend) y Vercel (frontend).
+## 1. Introduccion
 
-## Vista C4 — Contenedor
+Medifast Pharmacy gestiona operaciones de farmacia comunitaria: usuarios por rol, colas de turnos, cajas, catalogo, facturacion y estadisticas. Arquitectura cliente-servidor: SPA React consume API REST Django.
 
-- **Browser**: React SPA
-- **API**: Django + DRF (`/api/`)
-- **BD**: PostgreSQL (prod) / SQLite (dev)
+## 2. Objetivos de arquitectura
 
-## Modulos backend
+- Preservar funcionalidad academica original.
+- Separar configuracion por entorno sin secretos en Git.
+- Permitir desarrollo local SQLite y produccion PostgreSQL.
+- Evolucionar calidad sin reescritura completa.
 
-| App | Responsabilidad |
-|-----|-----------------|
-| users | Usuario (cc), roles, cliente/empleado/admin |
-| tickets | Turnos, cajas, servicios, facturas, estadisticas |
-| products | Catalogo productos |
-| admins | Perfil administrador |
+## 3. Vista C4 — Contexto
 
-## Autenticacion
+Actores: administrador, empleado/cajero, cliente. Sistema Medifast expone API HTTPS; BD relacional; despliegue historico Render + Vercel.
 
-Token DRF en header `Authorization: Token <key>`. Permisos por defecto `IsAuthenticated`.
+## 4. Vista C4 — Contenedores
 
-## Errores API
+```mermaid
+flowchart LR
+  Browser[React SPA]
+  API[Django DRF]
+  DB[(PostgreSQL / SQLite)]
+  Browser -->|HTTPS JSON| API
+  API --> DB
+```
 
-Handler central: `DS1.exceptions.api_exception_handler` (envoltura `success` / `error`).
+## 5. Modulos backend
 
-## Configuracion
+Ver `docs/arquitectura/modelo-datos.md` y `contratos-api.md`.
 
-Variables en `backend/.env` (plantilla `.env.example`). Frontend: `VITE_API_BASE_URL`.
+## 6. Frontend
 
-## Decisiones
+Vite bundler, rutas en `App.jsx`, modulos API en `frontend/src/api/`, estado auth en `localStorage` (token).
 
-Ver `docs/decisiones/ADR-001-api-errors.md`.
+## 7. Seguridad arquitectonica
+
+Token DRF, CORS explicito, throttle login, handler errores, HTTPS forzado si `DEBUG=False`.
+
+## 8. Despliegue
+
+Ver `docs/despliegue/`. `render.yaml` y `vercel.json` en raiz (config infra, no documentacion).
+
+## 9. Decisiones
+
+Registro ADR en `docs/decisiones/`. Indice: `docs/arquitectura/decisiones-registro.md`.
+
+## 10. Riesgos
+
+- Formato error API dual durante transicion frontend.
+- Credenciales historicas en tag backup — rotacion recomendada.

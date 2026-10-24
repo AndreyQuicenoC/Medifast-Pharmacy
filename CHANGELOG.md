@@ -6,8 +6,14 @@ Formato inspirado en Keep a Changelog. Versionado semantico cuando aplique.
 
 ### Anadido
 
+- Documentacion transversal en `docs/` (indice, RF/RNF, pruebas, seguridad, accesibilidad, despliegue)
+- Reorganizacion: despliegue y funcionalidades movidas desde raiz; eliminado SuperUser.txt del repo
+- CONTRIBUTING.md, Dockerfiles, gitleaks CI, throttle login, PageState, apiError
+- Matrices ISO 25010 y VEXARQ; plan de implementacion por bloques
+
+### Anadido (oleada anterior)
+
 - Modernizacion Fase 2+: CI, docker-compose PG, handler errores API, seed_dev_users
-- design.md, SAD, requisitos, backlog, ADR-001
 - Pagina 404, atajos de teclado, tokens de diseno, pagina /proyecto
 - README raiz profesional
 

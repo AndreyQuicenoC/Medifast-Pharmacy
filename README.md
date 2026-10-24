@@ -51,14 +51,9 @@ Comando: `python manage.py seed_dev_users` (solo entorno local). Documentacion d
 
 ## Documentacion
 
-| Documento | Contenido |
-|-----------|-----------|
-| [docs/design.md](docs/design.md) | Sistema visual |
-| [docs/arquitectura/SAD.md](docs/arquitectura/SAD.md) | Arquitectura |
-| [docs/requisitos/requisitos.md](docs/requisitos/requisitos.md) | Requisitos |
-| [docs/backlog/modernizacion-backlog.md](docs/backlog/modernizacion-backlog.md) | Backlog |
-| [CHANGELOG.md](CHANGELOG.md) | Cambios |
-| [SECURITY.md](SECURITY.md) | Seguridad |
+Indice completo: **[docs/README.md](docs/README.md)** (arquitectura, requisitos, pruebas, seguridad, despliegue, diseno, VEXARQ).
+
+En la raiz solo: [CHANGELOG.md](CHANGELOG.md), [SECURITY.md](SECURITY.md), [LICENSE](LICENSE), [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## CI/CD
 

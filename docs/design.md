@@ -1,65 +1,88 @@
-# Sistema de diseno — Medifast Pharmacy
+# Sistema de diseno Medifast Pharmacy
+
+Documento de referencia del frontend implementado. Actualizar junto con cambios en `frontend/src/index.css` y componentes base.
 
 ## 1. Proposito y alcance
 
-Define la identidad visual y los tokens reutilizables del frontend React. Aplica a pantallas operativas (login, turnos, cajas, productos, facturas, estadisticas) y paginas de soporte (404, acerca del proyecto).
+Unificar identidad visual, tokens, patrones de interaccion y criterios de accesibilidad para todas las pantallas React del monorepo Medifast.
 
-## 2. Identidad visual
+## 2. Identidad visual y principios
 
-Marca **Medifast**: salud comunitaria, confianza y claridad operativa. Paleta verde farmaceutico + acento dorado (no copia de marcas comerciales existentes).
+- Claridad operativa (colas, cajas, facturas).
+- Confianza (verde salud + acento calido).
+- Consistencia entre modulos admin, cajero y cliente.
 
 ## 3. Audiencia
 
-Personal de farmacia (administrador, empleado/cajero) y clientes en fila/turnos. Uso en escritorio y movil.
+Administradores, empleados/cajeros y clientes en dispositivos desktop y moviles.
 
-## 4. Tokens (implementados en `frontend/src/index.css`)
+## 4. Referencias (no copia literal)
 
-| Token | Valor | Uso |
-|-------|-------|-----|
-| `--color-primary` | `#166534` | Acciones principales, enlaces |
-| `--color-accent` | `#ca8a04` | Acento marca "fast" |
-| `--color-text` | `#111827` | Texto principal |
-| `--color-text-muted` | `#4b5563` | Texto secundario |
-| `--color-danger` | `#b91c1c` | Errores |
-| `--color-success` | `#15803d` | Exito |
+Inspiracion en patrones de dashboards de servicio y Material Design (tokens, estados, elevacion) sin declarar implementacion Material completa.
 
-## 5. Tipografia
+## 5. Paleta y tokens CSS
 
-Sans-serif sistema (`Segoe UI`, system-ui). Titulos en `font-bold`; cuerpo 16px base.
+Definidos en `:root` (`frontend/src/index.css`):
 
-## 6. Componentes base
+| Token | Uso |
+|-------|-----|
+| `--color-primary` | Acciones primarias, foco |
+| `--color-accent` | Marca Medi**fast** |
+| `--color-text` / `--color-text-muted` | Jerarquia textual |
+| `--color-danger` / `--color-success` | Feedback |
+| `--radius-md`, `--shadow-card` | Contenedores |
+
+## 6. Tipografia
+
+Familia `--font-sans`. Titulos pagina: `text-3xl font-bold`. Subtitulos: `text-xl font-semibold`.
+
+## 7. Espaciado y dimensiones
+
+Pagina: `--space-page`. Formularios: max-width `max-w-sm` / `max-w-lg` segun contexto. Header/footer full width con `max-w-5xl` en footer legacy.
+
+## 8. Componentes reutilizables
 
 - `Button.jsx`, `Header.jsx`, `Footer.jsx`
-- Paginas usan utilidades Tailwind 4 + tokens CSS
+- `PageState.jsx` (LoadingState, ErrorState, EmptyState)
+- `KeyboardShortcutsHelp.jsx`
+- `PageNotFound.jsx`, `Proyecto.jsx`
 
-## 7. Estados de interfaz
+## 9. Layout y navegacion
 
-Carga, error, vacio y exito deben mostrarse explicitamente (toast `react-hot-toast` donde ya se usa). No simular exito si la API fallo.
+`App.jsx`: fondo imagen + Header + Routes + Footer + Toaster. Rutas por rol tras login (admin, cajero, cliente).
 
-## 8. Formularios
+## 10. Estados e interacciones
 
-Etiquetas visibles, foco visible (`:focus-visible`), mensajes de error asociados al campo.
+Hover en enlaces footer/header. Botones primarios con opacidad en hover. Spinners en LoadingState. Toasts para acciones rapidas.
 
-## 9. Accesibilidad (objetivo WCAG 2.2 AA)
+## 11. Formularios
 
-HTML semantico, contraste en tokens primarios, `prefers-reduced-motion`, dialogo de atajos con `role="dialog"`, pagina 404 con titulo claro y acciones.
+Labels visibles, inputs con borde gris, toggle password en login. Validacion servidor obligatoria; cliente muestra mensajes via `getApiErrorMessage`.
 
-## 10. Atajos de teclado
+## 12. Iconografia
 
-| Atajo | Accion |
-|-------|--------|
-| `?` | Ayuda de atajos |
-| `Alt+1` | Foco en `#main-content` |
-| `Esc` | Cerrar dialogo de ayuda |
+Assets PNG/JPG en `frontend/src/assets/`. Logo Medifast en header y login con `alt` descriptivo.
 
-## 11. Responsive
+## 13. Animaciones
 
-Breakpoints Tailwind por defecto; layouts flex en header/footer.
+Spinner de carga. `@media (prefers-reduced-motion: reduce)` desactiva animaciones no esenciales.
 
-## 12. Pagina 404
+## 14. Responsive
 
-Componente `PageNotFound.jsx`: mensaje comprensible, enlaces a login y servicios.
+Tailwind breakpoints (`md:` en footer y layouts). Tablas y paneles deben scroll horizontal en movil (revision continua por pantalla).
 
-## 13. Mantenimiento
+## 15. Accesibilidad WCAG 2.2 AA (objetivo)
 
-Cambios visuales deben actualizar tokens en `index.css` y esta guia en el mismo PR.
+Foco visible, roles en dialogos, `aria-live` en carga, contraste tokens primarios sobre blanco, rutas 404 comprensibles. Ver `docs/accesibilidad/wcag-22-aa.md`.
+
+## 16. Reglas de consistencia
+
+No introducir colores fuera de tokens sin ADR. No usar solo color para errores (acompanar texto).
+
+## 17. Ejemplos
+
+Correcto: boton primario + mensaje de error textual. Incorrecto: alert generico sin detalle de API cuando `error.details` existe.
+
+## 18. Validacion visual
+
+Checklist por PR: contraste, foco teclado en formulario login, 404 enlaza rutas validas, reduced-motion respetado.

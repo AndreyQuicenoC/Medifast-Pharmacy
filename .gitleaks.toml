@@ -1,0 +1,16 @@
+title = "Medifast gitleaks"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "medifast-superuser-file"
+description = "Archivo local SuperUser.txt"
+regex = '''SuperUser\.txt'''
+tags = ["medifast"]
+
+[allowlist]
+paths = [
+  '''docs/despliegue/acceso-produccion.example.md''',
+  '''docs/desarrollo/usuarios-prueba.md''',
+]
