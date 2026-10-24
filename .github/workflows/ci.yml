@@ -19,7 +19,7 @@ jobs:
           curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.21.2/gitleaks_8.21.2_linux_x64.tar.gz | tar xz
           sudo install gitleaks /usr/local/bin/gitleaks
       - name: Escanear arbol de trabajo (sin historial Git)
-        run: gitleaks detect --no-git --config .gitleaks.toml --redact --verbose
+        run: gitleaks detect --no-git --config .gitleaks.toml -i .gitleaksignore --redact --verbose
 
   backend:
     needs: secrets
@@ -50,7 +50,7 @@ jobs:
           python manage.py check
           python manage.py migrate --noinput
       - name: Tests y cobertura
-        run: pytest --cov=apps --cov=config --cov-report=term-missing --cov-fail-under=62
+        run: pytest --cov=apps --cov=config --cov-report=term-missing --cov-fail-under=68
       - name: Seguridad (bandit + pip-audit)
         run: |
           bandit -r apps config -c pyproject.toml -x apps/operations/views.py -x apps/identity/views.py -x apps/operations/estadisticas_views.py

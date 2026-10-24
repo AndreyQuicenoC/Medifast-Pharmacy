@@ -1,0 +1,2 @@
+# Falso positivo Sidekiq en documentacion (proyecto no Ruby). Ver .gitleaks.toml disabledRules.
+README.md:sidekiq-secret:42

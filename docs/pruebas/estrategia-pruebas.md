@@ -15,8 +15,8 @@
 
 ## Gates obligatorios (CI)
 
-- Gitleaks sobre el arbol de trabajo (`.gitleaks.toml`, reglas Ruby/Sidekiq desactivadas)
-- `manage.py check`, `migrate --noinput`, `pytest` (cobertura ≥ 62 %)
+- Gitleaks (`.gitleaks.toml` con `disabledRules`, `.gitleaksignore`)
+- `manage.py check`, `migrate --noinput`, `pytest` (cobertura ≥ 68 %)
 - `npm run lint`, `test`, `build`, `test:e2e`
 
 ## Cobertura objetivo

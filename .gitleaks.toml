@@ -2,19 +2,12 @@ title = "Medifast gitleaks"
 
 [extend]
 useDefault = true
-
-# Proyecto Django/React: reglas Ruby/Sidekiq generan falsos positivos en README y docs.
-[[rules]]
-id = "sidekiq-secret"
-disabled = true
-
-[[rules]]
-id = "sidekiq-pro-secret"
-disabled = true
-
-[[rules]]
-id = "rubygems-api-token"
-disabled = true
+# [[rules]] disabled=true NO desactiva reglas heredadas en v8.21; usar disabledRules.
+disabledRules = [
+  "sidekiq-secret",
+  "sidekiq-pro-secret",
+  "rubygems-api-token",
+]
 
 [allowlist]
 description = "Plantillas, dependencias, tests y placeholders documentados"

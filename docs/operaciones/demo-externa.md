@@ -6,7 +6,7 @@ La demo no se versiona dentro de `Medifast-Pharmacy`. Use un directorio hermano,
 
 Plantilla incluida alli con:
 
-- Copia desplegable del frontend (`frontend/`) con botones de acceso demo
+- SPA React en la raiz del directorio demo (sin subcarpeta `frontend/`) y botones de acceso rapido
 - `docker compose` (PostgreSQL + backend del repo principal + seed `seed_demo_showcase`)
 - Credenciales ficticias documentadas solo en el README de demo
 

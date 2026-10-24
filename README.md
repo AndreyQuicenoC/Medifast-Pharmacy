@@ -37,14 +37,9 @@ py -3.13 -m venv .venv
 
 Calidad backend: `make quality` (Linux/macOS) o `.\scripts\quality.ps1` (Windows).
 
-### Frontend
+### Frontend (Vite)
 
-```powershell
-cd frontend
-copy .env.example .env
-npm ci
-npm run dev
-```
+Desde la carpeta `frontend`: copie `.env.example` a `.env`, ejecute `npm ci` y `npm run dev`.
 
 API por defecto: `http://localhost:8000/api` (`VITE_API_BASE_URL`).
 

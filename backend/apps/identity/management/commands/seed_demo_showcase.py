@@ -27,6 +27,11 @@ DEMO_USERS = [
     (910900005, "cliente", "Maria", "Lopez", "maria.demo@medifast.demo"),
     (910900006, "empleado", "Diana", "Torres", "diana.demo@medifast.demo"),
     (910900007, "administrador", "Felipe", "Gomez", "felipe.demo@medifast.demo"),
+    (910900008, "empleado", "Jorge", "Nino", "jorge.demo@medifast.demo"),
+    (910900009, "cliente", "Paola", "Ruiz", "paola.demo@medifast.demo"),
+    (910900010, "cliente", "Tomas", "Silva", "tomas.demo@medifast.demo"),
+    (910900011, "cliente", "Camila", "Duarte", "camila.demo@medifast.demo"),
+    (910900012, "empleado", "Esteban", "Paez", "esteban.demo@medifast.demo"),
 ]
 
 SERVICIOS = [
@@ -36,6 +41,9 @@ SERVICIOS = [
     ("Vacunacion", 1, "Esquema adulto e infantil", True),
     ("Entrega domicilio", 4, "Pedidos programados zona urbana", True),
     ("Control diabetes", 2, "Seguimiento glucosa y adherencia", True),
+    ("Dermocosmetica", 3, "Asesoria dermofarmacia", True),
+    ("Planificacion familiar", 2, "Anticonceptivos y orientacion", True),
+    ("Mascotas OTC", 4, "Antiparasitarios y vitaminas vet", True),
 ]
 
 PRODUCTOS_BASE = [
@@ -115,7 +123,7 @@ class Command(BaseCommand):
         if Servicio.objects.count() == len(servicios):
             self.stdout.write("Servicios demo listos.")
 
-        for i in range(45):
+        for i in range(90):
             base = PRODUCTOS_BASE[i % len(PRODUCTOS_BASE)]
             suffix = f" L{i + 1}" if i >= len(PRODUCTOS_BASE) else ""
             nombre = base[0] + suffix
@@ -137,7 +145,7 @@ class Command(BaseCommand):
 
         empleados = [u for u in users_by_cc.values() if u.rol == "empleado"]
         cajas = []
-        for idx, label in enumerate(("A", "B", "C", "D")):
+        for idx, label in enumerate(("A", "B", "C", "D", "E", "F", "G", "H")):
             cajero = empleados[idx] if idx < len(empleados) else None
             caja, _ = Caja.objects.get_or_create(
                 nombre=f"DEMO-{label}",
@@ -151,7 +159,7 @@ class Command(BaseCommand):
         clientes = list(Cliente.objects.filter(ID_Usuario__cc__gte=910900003))
         now = timezone.now()
         turno_num = Turno.objects.count() + 1
-        for idx in range(24):
+        for idx in range(52):
             cliente = clientes[idx % len(clientes)] if clientes else None
             if not cliente:
                 break
@@ -178,7 +186,7 @@ class Command(BaseCommand):
             turno_num += 1
 
         productos = list(Producto.objects.filter(Codigo__startswith="DEMO-")[:8])
-        for turno in Turno.objects.filter(numero_turno__gte=9000)[:16]:
+        for turno in Turno.objects.filter(numero_turno__gte=9000, estado="finalizado"):
             if Factura.objects.filter(ID_Turno=turno).exists():
                 continue
             lineas = [
@@ -202,6 +210,6 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.SUCCESS(
-                "Demo showcase cargado: usuarios 910900001-910900007, productos, turnos y facturas."
+                "Demo showcase cargado: usuarios 910900001-910900012, 90 productos, 52 turnos y facturas."
             )
         )

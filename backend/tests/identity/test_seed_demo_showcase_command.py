@@ -24,9 +24,9 @@ class SeedDemoShowcaseCommandTests(TestCase):
             User.objects.filter(cc__gte=910900001, cc__lte=910900010).count(),
             users_after_first,
         )
-        self.assertGreaterEqual(products_after_first, 40)
-        self.assertGreaterEqual(turnos_after_first, 20)
-        self.assertGreaterEqual(facturas_after_first, 10)
+        self.assertGreaterEqual(products_after_first, 85)
+        self.assertGreaterEqual(turnos_after_first, 45)
+        self.assertGreaterEqual(facturas_after_first, 8)
 
     def test_seed_requires_password(self):
         old = os.environ.pop("DEMO_SEED_PASSWORD", None)
