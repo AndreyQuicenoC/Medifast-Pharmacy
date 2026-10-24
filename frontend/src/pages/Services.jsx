@@ -13,6 +13,9 @@ import {
 import { useConfirm } from "../components/ConfirmProvider";
 import { notify } from "../utils/notify";
 import AdminPageLayout from "../components/AdminPageLayout";
+import ActionIconButton from "../components/ActionIconButton";
+import Tooltip from "../components/Tooltip";
+import { IconService } from "../components/icons";
 
 export default function ServicioEditor() {
   const navigate = useNavigate();
@@ -245,128 +248,116 @@ export default function ServicioEditor() {
       subtitle="Catálogo de atención en mostrador y consultorio"
       action={
         <div className="flex flex-wrap gap-2">
-          <Button className="btn-primary min-h-[2.75rem] px-4 py-2.5 text-sm" onClick={handleShowCreateForm}>
-            Nuevo servicio
-          </Button>
-          <Button
-            className={`min-h-[2.75rem] rounded-lg px-4 py-2.5 text-sm font-semibold text-white ${
-              showInactive ? "bg-violet-700 hover:bg-violet-800" : "bg-amber-600 hover:bg-amber-700"
-            }`}
-            onClick={() => setShowInactive(!showInactive)}
-          >
-            {showInactive ? "Ocultar inactivos" : "Mostrar inactivos"}
-          </Button>
+          <Tooltip label="Registrar un nuevo servicio">
+            <Button className="btn-primary min-h-[2.75rem] px-4 py-2.5 text-sm" onClick={handleShowCreateForm}>
+              Nuevo servicio
+            </Button>
+          </Tooltip>
+          <Tooltip label={showInactive ? "Ocultar servicios inactivos" : "Ver servicios inactivos"}>
+            <Button
+              className={`min-h-[2.75rem] rounded-lg px-4 py-2.5 text-sm font-semibold text-white ${
+                showInactive ? "bg-violet-700 hover:bg-violet-800" : "bg-amber-600 hover:bg-amber-700"
+              }`}
+              onClick={() => setShowInactive(!showInactive)}
+            >
+              {showInactive ? "Ocultar inactivos" : "Mostrar inactivos"}
+            </Button>
+          </Tooltip>
         </div>
       }
     >
       <div className="flex flex-col gap-6 lg:flex-row">
         <div className="flex-1">
 
-          {/* Lista de servicios */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {serviciosFiltrados.length === 0 ? (
-              <p className="col-span-full text-center text-gray-500 py-8">
+              <p className="col-span-full py-10 text-center text-[var(--color-text-muted)]">
                 No hay servicios disponibles
               </p>
             ) : (
               serviciosFiltrados.map((servicio) => (
-                <div
+                <article
                   key={servicio.id}
-                  className={`flex flex-col p-5 border rounded-lg shadow-sm min-h-[240px] 
-                    ${
-                      selectedServicio?.id === servicio.id
-                        ? "bg-green-50 border-green-500"
-                        : ""
-                    }
-                    ${
-                      !servicio.estado
-                        ? "opacity-70 border-dashed border-gray-400"
-                        : ""
-                    }`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleSelectServicio(servicio)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSelectServicio(servicio)}
+                  className={`flex cursor-pointer flex-col rounded-xl border p-4 shadow-sm transition hover:shadow-md ${
+                    selectedServicio?.id === servicio.id
+                      ? "border-emerald-500 bg-emerald-50/80"
+                      : "border-gray-200 bg-white"
+                  } ${!servicio.estado ? "border-dashed opacity-75" : ""}`}
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <Button
-                      className="flex-1 px-2 py-1 bg-zinc-400 hover:bg-slate-500 text-sm text-white rounded-lg"
-                      onClick={() => {
-                        handleSelectServicio(servicio);
-                      }}
-                    >
-                      {servicio.etiqueta}
-                    </Button>
-                    {!servicio.estado && (
-                      <span className="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                  <div className="mb-2 flex items-start justify-between gap-2">
+                    <div className="flex min-w-0 items-start gap-2">
+                      <span className="mt-0.5 text-emerald-700">
+                        <IconService name={servicio.etiqueta} className="h-6 w-6" />
+                      </span>
+                      <h3 className="font-semibold leading-snug text-[var(--color-text)]">
+                        {servicio.etiqueta}
+                      </h3>
+                    </div>
+                    {!servicio.estado ? (
+                      <span className="shrink-0 rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-800">
                         Inactivo
                       </span>
-                    )}
+                    ) : null}
                   </div>
 
-                  <p className="text-lg text-gray-600 flex-grow my-4 line-clamp-3">
+                  <p className="mb-3 line-clamp-3 flex-grow text-sm text-[var(--color-text-muted)]">
                     {servicio.descripcion}
                   </p>
 
-                  <div className="mt-auto w-full">
-                    <div className="mb-3">
-                      <span
-                        className={`inline-block text-xs ${
-                          servicio.prioridad
-                            ? "bg-red-200 text-red-700"
-                            : "bg-gray-200 text-gray-600"
-                        } px-2 py-1 rounded-full`}
-                      >
-                        {servicio.prioridad
-                          ? "Prioridad Alta"
-                          : "Prioridad Normal"}
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2 w-full">
-                      <Button
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 py-2 rounded-md w-full flex justify-center items-center"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleShowEditForm(servicio);
-                        }}
-                      >
-                        Editar
-                      </Button>
-
-                      {servicio.estado ? (
-                        <Button
-                          className="bg-orange-500 hover:bg-orange-600 text-white text-xs px-2 py-2 rounded-md w-full flex justify-center items-center"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeactivate(servicio.id);
-                          }}
-                        >
-                          Desactivar
-                        </Button>
-                      ) : (
-                        <Button
-                          className="bg-green-600 hover:bg-green-700 text-white text-xs px-2 py-2 rounded-md w-full flex justify-center items-center"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleActivate(servicio.id);
-                          }}
-                        >
-                          Activar
-                        </Button>
-                      )}
-                    </div>
-
-                    {/* Botón de eliminación permanente */}
-                    <div className="mt-2 w-full">
-                      <Button
-                        className="bg-red-700 hover:bg-red-800 text-white text-xs px-2 py-2 rounded-md w-full flex justify-center items-center"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(servicio.id);
-                        }}
-                      >
-                        Eliminar
-                      </Button>
-                    </div>
+                  <div className="mb-3 flex flex-wrap gap-1.5">
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                        servicio.prioridad
+                          ? "bg-red-100 text-red-800"
+                          : "bg-sky-100 text-sky-800"
+                      }`}
+                    >
+                      {servicio.prioridad ? "Prioridad alta" : "Prioridad normal"}
+                    </span>
                   </div>
-                </div>
+
+                  <div className="mt-auto flex items-center justify-end gap-1.5 border-t border-gray-100 pt-3">
+                    <ActionIconButton
+                      variant="edit"
+                      label="Editar servicio"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleShowEditForm(servicio);
+                      }}
+                    />
+                    {servicio.estado ? (
+                      <ActionIconButton
+                        variant="deactivate"
+                        label="Desactivar servicio"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeactivate(servicio.id);
+                        }}
+                      />
+                    ) : (
+                      <ActionIconButton
+                        variant="activate"
+                        label="Activar servicio"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleActivate(servicio.id);
+                        }}
+                      />
+                    )}
+                    <ActionIconButton
+                      variant="delete"
+                      label="Eliminar servicio"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(servicio.id);
+                      }}
+                    />
+                  </div>
+                </article>
               ))
             )}
           </div>
@@ -497,36 +488,30 @@ export default function ServicioEditor() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 w-full mt-2">
-                    <Button
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+                  <div className="mt-4 flex flex-wrap justify-end gap-1.5 border-t border-gray-100 pt-4">
+                    <ActionIconButton
+                      variant="edit"
+                      label="Editar servicio"
                       onClick={() => handleShowEditForm(selectedServicio)}
-                    >
-                      Editar Servicio
-                    </Button>
-
+                    />
                     {selectedServicio.estado ? (
-                      <Button
-                        className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md"
+                      <ActionIconButton
+                        variant="deactivate"
+                        label="Desactivar servicio"
                         onClick={() => handleDeactivate(selectedServicio.id)}
-                      >
-                        Desactivar
-                      </Button>
+                      />
                     ) : (
-                      <Button
-                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
+                      <ActionIconButton
+                        variant="activate"
+                        label="Activar servicio"
                         onClick={() => handleActivate(selectedServicio.id)}
-                      >
-                        Activar
-                      </Button>
+                      />
                     )}
-
-                    <Button
-                      className="col-span-2 bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-md mt-2"
+                    <ActionIconButton
+                      variant="delete"
+                      label="Eliminar servicio"
                       onClick={() => handleDelete(selectedServicio.id)}
-                    >
-                      Eliminar
-                    </Button>
+                    />
                   </div>
                 </div>
               )

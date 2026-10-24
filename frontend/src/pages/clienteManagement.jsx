@@ -12,6 +12,9 @@ import {
 } from "../api/user.api";
 import { PageShell } from "../components/PageState";
 import { useConfirm } from "../components/ConfirmProvider";
+import AdminPageLayout from "../components/AdminPageLayout";
+import ActionIconButton from "../components/ActionIconButton";
+import Tooltip from "../components/Tooltip";
 
 export default function ClienteManagement() {
   const confirm = useConfirm();
@@ -412,19 +415,22 @@ export default function ClienteManagement() {
       onRetry={loadAllUsers}
       loadingMessage="Cargando usuarios..."
     >
-    <div className="min-h-screen flex flex-col bg-gray-100 mr-6 ml-6 rounded-xl">
-      {/* Header */}
-      <div className="bg-white shadow-sm  px-4 sm:px-6 py-4 rounded-t-xl">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
-          Gestión de Usuarios
-        </h1>
-        <p className="text-sm sm:text-base text-gray-600">
-          Administra usuarios desde un solo lugar
-        </p>
-      </div>
-
-      {/* Menu Bar */}
-      <div className="bg-white shadow-sm border-b px-4 sm:px-6 py-3">
+    <AdminPageLayout
+      title="Gestión de usuarios"
+      subtitle="Clientes, cajeros y administradores en un solo lugar"
+      action={
+        <Tooltip label="Crear un nuevo usuario">
+          <button
+            type="button"
+            onClick={handleShowCreateForm}
+            className="btn-primary min-h-[2.75rem] px-4 py-2.5 text-sm"
+          >
+            Crear usuario
+          </button>
+        </Tooltip>
+      }
+    >
+      <div className="mb-4 rounded-xl border border-gray-100 bg-gray-50/80 px-3 py-3 sm:px-4">
         <div className="flex flex-wrap gap-1 sm:gap-2">
           {["todos", "cliente", "administrador", "empleado"].map((role) => (
             <button
@@ -473,7 +479,7 @@ export default function ClienteManagement() {
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
         {/* Left Panel - Lista de usuarios */}
         <div
-          className="w-full lg:w-2/3 bg-white shadow-lg m-2 sm:m-4 rounded-lg overflow-hidden flex flex-col"
+          className="flex w-full flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm lg:w-2/3"
           style={{ maxHeight: "calc(100vh - 200px)" }}
         >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 sm:px-6 py-4 bg-gray-50 border-b gap-3 sm:gap-0 flex-shrink-0">
@@ -528,13 +534,6 @@ export default function ClienteManagement() {
                 )}
               </div>
 
-              {/* Botón de acción */}
-              <button
-                onClick={handleShowCreateForm}
-                className="px-3 sm:px-4 py-2 rounded-lg font-medium text-sm w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white"
-              >
-                Crear Usuario
-              </button>
             </div>
           </div>
 
@@ -613,25 +612,23 @@ export default function ClienteManagement() {
                     >
                       {user.is_active ? "Activo" : "Inactivo"}
                     </span>
-                    <div className="flex gap-2">
-                      <button
+                    <div className="flex gap-1">
+                      <ActionIconButton
+                        variant="edit"
+                        label="Editar usuario"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleShowEditForm(user);
                         }}
-                        className="text-indigo-600 hover:text-indigo-900 text-sm"
-                      >
-                        Editar
-                      </button>
-                      <button
+                      />
+                      <ActionIconButton
+                        variant="delete"
+                        label="Eliminar usuario"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(user.id);
                         }}
-                        className="text-red-600 hover:text-red-900 text-sm"
-                      >
-                        Eliminar
-                      </button>
+                      />
                     </div>
                   </div>
                 </div>
@@ -742,25 +739,23 @@ export default function ClienteManagement() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex gap-2 whitespace-nowrap">
-                          <button
+                        <div className="flex gap-1 whitespace-nowrap">
+                          <ActionIconButton
+                            variant="edit"
+                            label="Editar usuario"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleShowEditForm(user);
                             }}
-                            className="text-indigo-600 hover:text-indigo-900"
-                          >
-                            Editar
-                          </button>
-                          <button
+                          />
+                          <ActionIconButton
+                            variant="delete"
+                            label="Eliminar usuario"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDelete(user.id);
                             }}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            Eliminar
-                          </button>
+                          />
                         </div>
                       </td>
                     </tr>
@@ -1086,19 +1081,17 @@ export default function ClienteManagement() {
                   )}
                 </div>
 
-                <div className="mt-6 flex flex-col sm:flex-row gap-2">
-                  <button
+                <div className="mt-6 flex justify-end gap-1.5 border-t border-gray-100 pt-4">
+                  <ActionIconButton
+                    variant="edit"
+                    label="Editar usuario"
                     onClick={() => handleShowEditForm(selectedUser)}
-                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg"
-                  >
-                    Editar
-                  </button>
-                  <button
+                  />
+                  <ActionIconButton
+                    variant="delete"
+                    label="Eliminar usuario"
                     onClick={() => handleDelete(selectedUser.id)}
-                    className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg"
-                  >
-                    Eliminar
-                  </button>
+                  />
                 </div>
               </div>
             </div>
@@ -1115,7 +1108,7 @@ export default function ClienteManagement() {
           )}
         </div>
       </div>
-    </div>
+    </AdminPageLayout>
     </PageShell>
   );
 }

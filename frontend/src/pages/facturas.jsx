@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { getFacturas } from "../api/facturas.api";
 import { PageShell } from "../components/PageState";
 import AdminPageLayout from "../components/AdminPageLayout";
+import Tooltip from "../components/Tooltip";
 
 function asFacturaList(value) {
   return Array.isArray(value) ? value : [];
@@ -310,16 +311,23 @@ export default function Facturas() {
         }
       `}</style>
 
-      <div className="min-h-screen bg-gray-100 p-6 max-w-10xl mr-50 ml-50 rounded-xl">
-        <div className="max-w-7xl mx-auto">
-          {/* Encabezado */}
-          <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
-            <h1 className="text-3xl font-bold text-center text-gray-800 mb-4">
-              Gestión de Facturas
-            </h1>
-
-            {/* Filtros */}
-            <div className="flex justify-between items-center">
+      <AdminPageLayout
+        title="Gestión de facturas"
+        subtitle="Consulta, filtrado e impresión de comprobantes"
+        action={
+          <Tooltip label="Recargar listado de facturas">
+            <button
+              type="button"
+              onClick={() => cargarFacturas(currentPage)}
+              className="btn-primary min-h-[2.75rem] px-4 py-2.5 text-sm"
+              disabled={loading || loadingPage}
+            >
+              {loading || loadingPage ? "Cargando..." : "Actualizar"}
+            </button>
+          </Tooltip>
+        }
+      >
+            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center space-x-4">
                 <label className="text-gray-700 font-semibold">
                   Filtrar por fecha:
@@ -347,18 +355,9 @@ export default function Facturas() {
                   </button>
                 )}
               </div>
-
-              <button
-                onClick={() => cargarFacturas(currentPage)}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-                disabled={loading || loadingPage}
-              >
-                {loading || loadingPage ? "Cargando..." : "Actualizar"}
-              </button>
             </div>
-            
-            {/* Información de paginación */}
-            <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
+
+            <div className="mb-4 flex items-center justify-between text-sm text-[var(--color-text-muted)]">
               <div>
                 Mostrando {facturas.length > 0 ? ((currentPage - 1) * pageSize + 1) : 0} - {Math.min(currentPage * pageSize, totalFacturas)} de {totalFacturas} facturas
               </div>
@@ -366,7 +365,6 @@ export default function Facturas() {
                 Página {currentPage} de {totalPages}
               </div>
             </div>
-          </div>
 
           {/* Estadísticas */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -941,8 +939,7 @@ export default function Facturas() {
               </div>
             </div>
           )}
-        </div>
-      </div>
+      </AdminPageLayout>
     </>
     </PageShell>
   );

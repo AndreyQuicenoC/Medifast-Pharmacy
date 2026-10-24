@@ -14,6 +14,8 @@ import { useConfirm } from "../components/ConfirmProvider";
 import { notify } from "../utils/notify";
 import AdminPageLayout from "../components/AdminPageLayout";
 import { IconAdminCajas } from "../components/AdminModuleIcons";
+import ActionIconButton from "../components/ActionIconButton";
+import Tooltip from "../components/Tooltip";
 
 export default function CajasView() {
   const confirm = useConfirm();
@@ -259,9 +261,11 @@ export default function CajasView() {
       title="Gestión de cajas"
       subtitle="Asignación de cajeros y estado de mostrador"
       action={
-        <button type="button" onClick={handleShowCreateForm} className="btn-primary min-h-[2.75rem] px-4 py-2.5 text-sm">
-          Nueva caja
-        </button>
+        <Tooltip label="Registrar una nueva caja">
+          <button type="button" onClick={handleShowCreateForm} className="btn-primary min-h-[2.75rem] px-4 py-2.5 text-sm">
+            Nueva caja
+          </button>
+        </Tooltip>
       }
     >
       <div className="flex flex-col gap-6 lg:flex-row">
@@ -298,24 +302,30 @@ export default function CajasView() {
                           ? `${caja.usuario.first_name} ${caja.usuario.last_name}`
                           : "Sin asignar"}
                       </p>
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        <button type="button" onClick={() => handleShowEditForm(caja)} className="btn-secondary min-h-[2.5rem] flex-1 py-2 text-xs">
-                          Editar
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleToggleEstado(caja.id, caja.Estado)}
-                          className="min-h-[2.5rem] flex-1 rounded-lg bg-amber-100 py-2 text-xs font-semibold text-amber-900 hover:bg-amber-200"
-                        >
-                          {caja.Estado ? "Desactivar" : "Activar"}
-                        </button>
-                        <button
-                          type="button"
+                      <div className="mt-3 flex justify-end gap-1.5 border-t border-gray-100 pt-3">
+                        <ActionIconButton
+                          variant="edit"
+                          label="Editar caja"
+                          onClick={() => handleShowEditForm(caja)}
+                        />
+                        {caja.Estado ? (
+                          <ActionIconButton
+                            variant="deactivate"
+                            label="Desactivar caja"
+                            onClick={() => handleToggleEstado(caja.id, caja.Estado)}
+                          />
+                        ) : (
+                          <ActionIconButton
+                            variant="activate"
+                            label="Activar caja"
+                            onClick={() => handleToggleEstado(caja.id, caja.Estado)}
+                          />
+                        )}
+                        <ActionIconButton
+                          variant="delete"
+                          label="Eliminar caja"
                           onClick={() => handleDelete(caja.id)}
-                          className="min-h-[2.5rem] flex-1 rounded-lg bg-red-700 py-2 text-xs font-semibold text-white hover:bg-red-800"
-                        >
-                          Eliminar
-                        </button>
+                        />
                       </div>
                     </div>
                   </div>

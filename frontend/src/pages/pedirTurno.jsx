@@ -9,6 +9,7 @@ import { PageShell } from "../components/PageState";
 import { IconInfo, IconService } from "../components/icons";
 import { notify } from "../utils/notify";
 import AdminPageLayout from "../components/AdminPageLayout";
+import Tooltip from "../components/Tooltip";
 
 export default function PedirTurno() {
   const navigate = useNavigate();
@@ -128,7 +129,7 @@ export default function PedirTurno() {
     <AdminPageLayout
       title="Solicitar turno"
       subtitle="Selecciona un servicio (máximo uno activo)"
-      backTo="/turnos"
+      showBack={false}
       action={
         clienteInfo ? (
           <div className="text-right text-sm">
@@ -216,6 +217,7 @@ export default function PedirTurno() {
 
             {/* Botones */}
             <div className="flex gap-4">
+              <Tooltip label="Volver a la vista de tu turno">
               <button
                 type="button"
                 onClick={() => navigate("/turnos")}
@@ -223,6 +225,8 @@ export default function PedirTurno() {
               >
                 Cancelar
               </button>
+              </Tooltip>
+              <Tooltip label="Confirmar solicitud de turno">
               <button
                 type="submit"
                 disabled={creandoTurno || !servicioSeleccionado}
@@ -241,6 +245,7 @@ export default function PedirTurno() {
                   "Solicitar Turno"
                 )}
               </button>
+              </Tooltip>
             </div>
           </form>
         <p className="mt-4 text-center text-xs text-[var(--color-text-muted)]">
