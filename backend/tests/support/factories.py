@@ -7,7 +7,7 @@ from datetime import datetime
 
 from django.utils import timezone
 
-from apps.identity.models import Administrador, Cliente, User
+from apps.identity.models import Administrador, Cliente, Empleado, User
 
 
 def _unique_cc() -> int:
@@ -41,6 +41,11 @@ def create_user_with_password(*, rol: str = "cliente", **overrides):
         )
     if rol == "administrador":
         Administrador.objects.get_or_create(ID_Usuario=user)
+    if rol == "empleado":
+        Empleado.objects.get_or_create(
+            ID_Usuario=user,
+            defaults={"Fecha_contratacion": timezone.now().date()},
+        )
     return user, password
 
 

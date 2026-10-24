@@ -3,11 +3,27 @@ title = "Medifast gitleaks"
 [extend]
 useDefault = true
 
+# Proyecto Django/React: reglas Ruby/Sidekiq generan falsos positivos en README y docs.
+[[rules]]
+id = "sidekiq-secret"
+disabled = true
+
+[[rules]]
+id = "sidekiq-pro-secret"
+disabled = true
+
+[[rules]]
+id = "rubygems-api-token"
+disabled = true
+
 [allowlist]
 description = "Plantillas, dependencias, tests y placeholders documentados"
 paths = [
+  '''(^|/)frontend/node_modules''',
   '''node_modules''',
-  '''(^|/)backend/(\.venv|env)/''',
+  '''(^|[\\/])backend[\\/]\.venv[\\/]''',
+  '''(^|[\\/])\.venv[\\/]''',
+  '''(^|/)backend/(env)/''',
   '''(^|/)backend/tests/''',
   '''docs/despliegue/acceso-produccion\.example\.md''',
   '''(^|/)backend/\.env\.example$''',

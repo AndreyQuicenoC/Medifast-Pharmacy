@@ -50,7 +50,7 @@ jobs:
           python manage.py check
           python manage.py migrate --noinput
       - name: Tests y cobertura
-        run: pytest --cov=apps --cov=config --cov-report=term-missing --cov-fail-under=55
+        run: pytest --cov=apps --cov=config --cov-report=term-missing --cov-fail-under=62
       - name: Seguridad (bandit + pip-audit)
         run: |
           bandit -r apps config -c pyproject.toml -x apps/operations/views.py -x apps/identity/views.py -x apps/operations/estadisticas_views.py
