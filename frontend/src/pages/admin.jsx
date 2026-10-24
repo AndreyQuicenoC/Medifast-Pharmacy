@@ -5,16 +5,30 @@ import cajerosImg from "../assets/cajeros.png";
 import serviciosImg from "../assets/servicios.png";
 import usuariosImg from "../assets/ids.png";
 import resenasImg from "../assets/resenas.png";
+import productosImg from "../assets/productos.png";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
 
+  const rol = localStorage.getItem("rol");
+
+  if (rol !== "administrador") {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-gray-600">
+          No tienes permiso para acceder a esta sección. Solo administradores.
+        </p>
+      </div>
+    );
+  }
+
   const options = [
     { label: "Estadísticas", icon: estadisticasImg, path: "/estadisticas" },
-    { label: "Cajeros", icon: cajerosImg, path: "/cajeros" },
+    { label: "Cajas", icon: cajerosImg, path: "/cajas" },
     { label: "Servicios", icon: serviciosImg, path: "/servicios" },
     { label: "Usuarios", icon: usuariosImg, path: "/clienteManagement" },
-    { label: "Reseñas", icon: resenasImg, path: "/resenas" },
+    { label: "Productos", icon: productosImg, path: "/producto" },
+    { label: "Facturas", icon: resenasImg, path: "/facturas" },
   ];
 
   return (

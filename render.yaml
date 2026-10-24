@@ -1,0 +1,25 @@
+services:
+  # Backend API
+  - type: web
+    name: farmacia-backend
+    env: python
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn DS1.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - key: DEBUG
+        value: False
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
+    autoDeploy: false
+
+  # Base de datos PostgreSQL
+  - type: pserv
+    name: farmacia-db
+    plan: free
+    env: postgresql
+    autoDeploy: false
