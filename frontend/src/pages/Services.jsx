@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Button from "../components/Button";
+import { PageShell } from "../components/PageState";
 import { useNavigate } from "react-router-dom";
 import {
   GetAllServicios,
@@ -211,10 +212,6 @@ export default function ServicioEditor() {
     ? servicios
     : servicios.filter((servicio) => servicio.estado);
 
-  if (loading)
-    return <div className="text-center mt-8">Cargando servicios...</div>;
-  if (error)
-    return <div className="text-center mt-8 text-red-500">{error}</div>;
   if (!authorized)
     return (
       <p className="text-center mt-8">
@@ -223,6 +220,12 @@ export default function ServicioEditor() {
     );
 
   return (
+    <PageShell
+      loading={loading}
+      error={error}
+      onRetry={fetchServicios}
+      loadingMessage="Cargando servicios..."
+    >
     <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
       {/* Contenedor principal con diseño responsive de 2 columnas */}
       <div className="flex flex-col lg:flex-row gap-6">
@@ -523,5 +526,6 @@ export default function ServicioEditor() {
         )}
       </div>
     </div>
+    </PageShell>
   );
 }

@@ -38,3 +38,13 @@ export function EmptyState({ message = "No hay datos para mostrar." }) {
     </div>
   );
 }
+
+export function PageShell({ loading, error, onRetry, loadingMessage, children }) {
+  if (loading) {
+    return <LoadingState message={loadingMessage} />;
+  }
+  if (error) {
+    return <ErrorState message={error} onRetry={onRetry} />;
+  }
+  return children;
+}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getFacturas } from "../api/facturas.api";
+import { PageShell } from "../components/PageState";
 
 export default function Facturas() {
   const rol = localStorage.getItem("rol");
@@ -361,18 +362,8 @@ export default function Facturas() {
     );
   }
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando facturas...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
+    <PageShell loading={loading} loadingMessage="Cargando facturas...">
     <>
       {/* Estilos para saltos de página en impresión */}
       <style jsx>{`
@@ -1045,5 +1036,6 @@ export default function Facturas() {
         </div>
       </div>
     </>
+    </PageShell>
   );
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
+import { PageShell } from "../components/PageState";
 import {
   TIPOS_MEDICAMENTOS,
   fetchProductos,
@@ -248,18 +249,6 @@ export default function ProductosManagement() {
     setShowForm(false);
   };
 
-  // Restricción de acceso
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando productos...</p>
-        </div>
-      </div>
-    );
-  }
-
   const rol = localStorage.getItem("rol");
   if (rol !== "administrador") {
     return (
@@ -282,26 +271,13 @@ export default function ProductosManagement() {
     );
   }
 
-  if (error) {
-    return (
-      <div className="p-8 text-center">
-        <div className="bg-red-50 border border-red-200 rounded-xl p-6 inline-block">
-          <h2 className="text-xl font-semibold text-red-700 mb-2">
-            Error al cargar productos
-          </h2>
-          <p className="text-gray-700">{error}</p>
-          <button
-            onClick={() => loadProductos(token)}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg"
-          >
-            Reintentar
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
+    <PageShell
+      loading={loading}
+      error={error}
+      onRetry={() => loadProductos(token)}
+      loadingMessage="Cargando productos..."
+    >
     <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Columna izquierda - Lista de productos */}
@@ -884,5 +860,6 @@ export default function ProductosManagement() {
         )}
       </div>
     </div>
+    </PageShell>
   );
 }

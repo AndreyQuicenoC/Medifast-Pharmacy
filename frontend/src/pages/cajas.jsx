@@ -9,6 +9,7 @@ import {
   ActivarCaja,
   DesactivarCaja,
 } from "../api/caja.api";
+import { PageShell } from "../components/PageState";
 
 export default function CajasView() {
   // Estados
@@ -269,15 +270,8 @@ export default function CajasView() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p>Cargando cajas...</p>
-      </div>
-    );
-  }
-
   return (
+    <PageShell loading={loading} loadingMessage="Cargando cajas...">
     <main className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
       {/* Contenedor principal con diseño responsive de 2 columnas */}
       <div className="flex flex-col lg:flex-row gap-6">
@@ -469,5 +463,6 @@ export default function CajasView() {
         )}
       </div>
     </main>
+    </PageShell>
   );
 }

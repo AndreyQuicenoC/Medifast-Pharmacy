@@ -10,6 +10,7 @@ import {
   DeleteUserFromEndpoint,
   UpdateClientPriority,
 } from "../api/user.api";
+import { PageShell } from "../components/PageState";
 
 export default function ClienteManagement() {
   const navigate = useNavigate();
@@ -398,15 +399,13 @@ export default function ClienteManagement() {
     return allUsers.filter(user => user.rol === role).length;
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-xl">Cargando usuarios...</div>
-      </div>
-    );
-  }
-
   return (
+    <PageShell
+      loading={loading}
+      error={error}
+      onRetry={loadAllUsers}
+      loadingMessage="Cargando usuarios..."
+    >
     <div className="min-h-screen flex flex-col bg-gray-100 mr-6 ml-6 rounded-xl">
       {/* Header */}
       <div className="bg-white shadow-sm  px-4 sm:px-6 py-4 rounded-t-xl">
@@ -1111,5 +1110,6 @@ export default function ClienteManagement() {
         </div>
       </div>
     </div>
+    </PageShell>
   );
 }

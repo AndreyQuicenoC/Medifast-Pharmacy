@@ -5,6 +5,7 @@ import {
   crearTurno,
   getTurnoActivoCliente,
 } from "../api/turno.api";
+import { PageShell } from "../components/PageState";
 
 export default function PedirTurno() {
   const navigate = useNavigate();
@@ -128,18 +129,8 @@ export default function PedirTurno() {
     return prioridad === 1 ? "Prioritario" : "Normal";
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-600 mx-auto"></div>
-          <p className="mt-4 text-lg text-gray-600">Cargando servicios...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
+    <PageShell loading={loading} loadingMessage="Cargando servicios...">
     <div className="min-h-screen bg-gray-50 py-8 rounded-xl mx-auto">
       <div className="max-w-4xl mx-auto px-4">
         {/* Header */}
@@ -278,5 +269,6 @@ export default function PedirTurno() {
         </div>
       </div>
     </div>
+    </PageShell>
   );
 }
