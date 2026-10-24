@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const badges = [
   "Django 5.2",
   "DRF 3.18",
@@ -19,17 +21,32 @@ const aprendizajes = [
   "Documentación viva: CHANGELOG, CONTRIBUTING y demo desacoplada del monorepo.",
 ];
 
+const teamOriginal = [
+  "Francesco Garcia Vargas",
+  "Jonathan Aristizabal",
+  "Diego Espinosa",
+  "Adolfo Andrey Quiceno",
+  "Miguel Casanova",
+  "Diego Armado Espinosa",
+  "Jose Daniel Trujillo Suarez",
+];
+
 export default function Proyecto() {
   return (
-    <main id="main-content" className="mx-auto max-w-4xl flex-1 px-4 py-10" tabIndex={-1}>
+    <main id="main-content" className="mx-auto max-w-4xl flex-1 px-4 py-10 md:py-12" tabIndex={-1}>
       <div className="overflow-hidden rounded-2xl bg-white/95 shadow-[var(--shadow-card)]">
         <div className="bg-gradient-to-r from-emerald-800 to-green-600 px-8 py-10 text-white md:px-10">
-          <p className="text-sm font-medium uppercase tracking-wider text-emerald-100">Acerca del proyecto</p>
-          <h1 className="mt-2 text-3xl font-bold">Medifast Pharmacy</h1>
+          <p className="text-sm font-medium uppercase tracking-wider text-emerald-100">
+            Acerca del proyecto
+          </p>
+          <h1 className="mt-2 text-3xl font-bold">Medifast Pharmacy — trabajo académico</h1>
           <p className="mt-3 max-w-2xl text-emerald-50/95">
-            Aplicación full-stack para operación de farmacia: turnos, cajas, catálogo, facturación y
-            estadísticas. Nació como proyecto de Desarrollo de Software I y se modernizó con enfoque en
-            calidad, seguridad y DevOps.
+            Esta sección describe el desarrollo de software del sistema asociado a la marca Medifast.
+            La información comercial y de servicios de la farmacia está en{" "}
+            <Link to="/sobre-nosotros" className="underline underline-offset-2 hover:text-white">
+              Sobre nosotros
+            </Link>
+            .
           </p>
         </div>
 
@@ -52,7 +69,7 @@ export default function Proyecto() {
 
           <section aria-labelledby="learn-heading">
             <h2 id="learn-heading" className="text-xl font-semibold text-[var(--color-text)]">
-              Aprendizajes del equipo
+              Aprendizajes del equipo de desarrollo
             </h2>
             <ul className="mt-4 space-y-3">
               {aprendizajes.map((item) => (
@@ -67,17 +84,41 @@ export default function Proyecto() {
             </ul>
           </section>
 
+          <section aria-labelledby="team-heading">
+            <h2 id="team-heading" className="text-xl font-semibold text-[var(--color-text)]">
+              Equipo de desarrollo original
+            </h2>
+            <p className="mt-2 text-sm text-[var(--color-text-muted)]">
+              Proyecto de Desarrollo de Software I — Universidad. Integrantes:
+            </p>
+            <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+              {teamOriginal.map((name) => (
+                <li
+                  key={name}
+                  className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-4 py-2 text-sm"
+                >
+                  {name}
+                </li>
+              ))}
+            </ul>
+          </section>
+
           <section aria-labelledby="credits-heading">
             <h2 id="credits-heading" className="text-xl font-semibold text-[var(--color-text)]">
-              Origen y evolución
+              Evolución y modernización
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">
-              Integrantes originales: Francesco Garcia Vargas, Jonathan Aristizabal, Diego Espinosa,
-              Adolfo Andrey Quiceno, Miguel Casanova, Diego Armado Espinosa y Jose Daniel Trujillo
-              Suarez. Modernización posterior: Andrey Quiceno. Los integrantes originales no
-              participaron necesariamente en los cambios posteriores.
+              La modernización posterior del repositorio (DevOps, pruebas, accesibilidad, demo
+              offline y despliegue) fue liderada por <strong>Andrey Quiceno</strong>. Los integrantes
+              originales no participaron necesariamente en esas iteraciones.
             </p>
           </section>
+
+          <div className="border-t border-gray-100 pt-6">
+            <Link to="/sobre-nosotros" className="btn-secondary inline-flex min-w-[10rem] justify-center">
+              Volver a la farmacia
+            </Link>
+          </div>
         </div>
       </div>
     </main>
