@@ -54,6 +54,10 @@ API por defecto: `http://localhost:8000/api` (`VITE_API_BASE_URL`).
 .\scripts\validate-local.ps1
 ```
 
+## Demo academica (externa)
+
+La demo con datos ficticios no vive en este repo. Use el directorio hermano `Medifast-Pharmacy-Demo` (plantilla) o [docs/operaciones/demo-externa.md](docs/operaciones/demo-externa.md).
+
 ## Documentacion
 
 - Indice: **[docs/README.md](docs/README.md)**

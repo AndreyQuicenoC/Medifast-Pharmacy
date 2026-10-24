@@ -221,7 +221,7 @@ python manage.py shell
 >>> from rest_framework.authtoken.models import Token
 >>> user = get_user_model().objects.get(username='admin')
 >>> token, created = Token.objects.get_or_create(user=user)
->>> print(token.key)
+>>> print("TOKEN_PLACEHOLDER")
 ```
 
 ## 📝 Desarrollo

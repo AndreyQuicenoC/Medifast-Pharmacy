@@ -72,6 +72,8 @@ jspm_packages/
 .env.test
 CREDENCIALES-PRODUCCION.md
 SuperUser.txt
+DB/
+**/DB/
 Notas Versiones.txt
 
 # parcel-bundler cache (https://parceljs.org/)

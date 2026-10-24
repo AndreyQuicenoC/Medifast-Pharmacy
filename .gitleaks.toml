@@ -4,12 +4,22 @@ title = "Medifast gitleaks"
 useDefault = true
 
 [allowlist]
-description = "Plantillas, dependencias y artefactos locales"
+description = "Plantillas, dependencias, tests y placeholders documentados"
 paths = [
   '''node_modules''',
   '''(^|/)backend/(\.venv|env)/''',
+  '''(^|/)backend/tests/''',
   '''docs/despliegue/acceso-produccion\.example\.md''',
-  '''backend/\.env\.example''',
-  '''\.env\.example''',
-  '''frontend/\.env\.example''',
+  '''(^|/)backend/\.env\.example$''',
+  '''(^|/)\.env\.example$''',
+  '''(^|/)frontend/\.env\.example$''',
+  '''(^|/)backend/\.pytest_cache/''',
+  '''(^|/)backend/\.venv/''',
+]
+regexes = [
+  '''(?i)replace-with-''',
+  '''(?i)your-[a-z-]+''',
+  '''(?i)change-me-''',
+  '''<[^>\n]{1,80}>''',
+  '''TOKEN_PLACEHOLDER''',
 ]

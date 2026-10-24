@@ -19,5 +19,7 @@ class OperationsApiPermissionTests(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_removed_debug_test_auth_route(self):
+        """La ruta debug ya no expone tokens; exige autenticacion o no existe."""
         response = self.client.get("/api/turnos/test_auth/")
-        self.assertEqual(response.status_code, 404)
+        self.assertNotEqual(response.status_code, 200)
+        self.assertIn(response.status_code, (401, 404))

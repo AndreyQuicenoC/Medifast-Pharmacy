@@ -2,19 +2,22 @@
 
 ## Piramide
 
-1. **Unitarias backend**: modelos, handler errores, utilidades.
-2. **API**: autenticacion, permisos, validacion (DB SQLite en CI).
-3. **Frontend**: lint + build; componentes criticos (fase siguiente: Vitest).
-4. **Integracion**: scripts/validate-local.ps1, flujos manuales documentados.
-5. **E2E** (pendiente Playwright): login, turno, factura.
+1. **Unitarias backend**: handler de errores, settings de plataforma.
+2. **API funcional**: login/registro, CRUD producto, listado servicios (`backend/tests/**`, SQLite en memoria por caso).
+3. **API permisos**: endpoints sensibles sin token → 401 (`test_api_permissions.py` por dominio).
+4. **Frontend**: Vitest (utilidades), lint, build, Playwright smoke en CI.
+5. **Integracion local**: `scripts/validate-local.ps1`.
+
+## Aislamiento
+
+- Cada `TestCase` usa base de datos de prueba independiente (pytest-django).
+- Credenciales generadas en runtime (`tests/support/factories.py`); nada versionado.
 
 ## Gates obligatorios (CI)
 
-- `manage.py check`
-- `migrate --noinput`
-- Tests en `apps.identity.tests.test_*`
-- `npm run lint` (0 errores)
-- `npm run build`
+- Gitleaks sobre el arbol de trabajo (`.gitleaks.toml`)
+- `manage.py check`, `migrate --noinput`, `pytest` (cobertura ≥ 55 %)
+- `npm run lint`, `test`, `build`, `test:e2e`
 
 ## Cobertura objetivo
 

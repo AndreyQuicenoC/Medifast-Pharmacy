@@ -22,7 +22,9 @@ Modernizacion integral VEXARQ: arquitectura por dominios, calidad en CI, segurid
 
 ### Corregido
 
-- Gitleaks: eliminacion de secretos en docs, regla custom defectuosa, allowlist de plantillas
+- Gitleaks: secretos en docs, regla custom defectuosa, plantillas `.env` vacias, allowlist tests/docs, `package.json` raiz legacy
+- Pruebas backend funcionales (auth, producto, servicios) con fabricas aisladas; permisos por dominio
+- Demo academica documentada fuera del repositorio principal
 - Seguridad: permisos API, estadisticas autenticadas, registro sin fuga de excepciones, `DB_PASSWORD` obligatorio fuera de SQLite
 - Build frontend en CI; npm audit en dependencias criticas
 
