@@ -9,11 +9,14 @@ export default function AdminPageLayout({
   showBack = true,
   action,
   children,
+  size = "default",
 }) {
   const navigate = useNavigate();
+  const maxWidth =
+    size === "wide" ? "max-w-[88rem]" : size === "full" ? "max-w-[96rem]" : "max-w-7xl";
 
   return (
-    <div className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 md:px-6 md:py-10">
+    <div className={`mx-auto w-full ${maxWidth} flex-1 px-4 py-8 md:px-6 md:py-10`}>
       <div className="overflow-hidden rounded-2xl border border-emerald-100 bg-white/95 shadow-[var(--shadow-card)]">
         <header className="flex flex-wrap items-center gap-3 border-b border-emerald-100 bg-gradient-to-r from-emerald-50/90 to-white px-5 py-4 md:px-6">
           {showBack ? (

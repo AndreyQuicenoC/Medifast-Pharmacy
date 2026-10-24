@@ -416,6 +416,7 @@ export default function ClienteManagement() {
       loadingMessage="Cargando usuarios..."
     >
     <AdminPageLayout
+      size="wide"
       title="Gestión de usuarios"
       subtitle="Clientes, cajeros y administradores en un solo lugar"
       action={
@@ -475,12 +476,9 @@ export default function ClienteManagement() {
         </div>
       )}
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
-        {/* Left Panel - Lista de usuarios */}
-        <div
-          className="flex w-full flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm lg:w-2/3"
-          style={{ maxHeight: "calc(100vh - 200px)" }}
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_22rem] 2xl:grid-cols-[minmax(0,1fr)_26rem]">
+        <section
+          className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm"
         >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 sm:px-6 py-4 bg-gray-50 border-b gap-3 sm:gap-0 flex-shrink-0">
             <h2 className="text-lg font-semibold text-gray-800">
@@ -537,10 +535,7 @@ export default function ClienteManagement() {
             </div>
           </div>
 
-          <div
-            className="flex-1 overflow-auto"
-            style={{ maxHeight: "calc(100vh - 280px)", scrollbarWidth: "thin" }}
-          >
+          <div className="max-h-[min(70vh,42rem)] flex-1 overflow-auto overscroll-contain">
             {/* Indicador de búsqueda */}
             {searchTerm && (
               <div className="px-4 py-2 bg-blue-50 border-b text-sm text-blue-700">
@@ -635,21 +630,20 @@ export default function ClienteManagement() {
               ))}
             </div>
 
-            {/* Desktop View - Table */}
-            <div className="hidden lg:block overflow-x-auto overflow-y-auto">
-              <table className="min-w-full divide-y divide-gray-200">
+            <div className="hidden lg:block overflow-x-auto">
+              <table className="w-full table-fixed divide-y divide-gray-200 text-sm">
                 <thead className="bg-gray-50 sticky top-0 z-10">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                    <th className="w-[11%] px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                       CC
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                    <th className="w-[16%] px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                       Nombre
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                    <th className="w-[26%] px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                       Email
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                    <th className="w-[12%] px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                       Rol
                     </th>
                     {/* Columna adicional para clientes */}
@@ -664,10 +658,10 @@ export default function ClienteManagement() {
                         F. Contratación
                       </th>
                     )}
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                    <th className="w-[10%] px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                       Estado
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                    <th className="w-[11%] px-2 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
                       Acciones
                     </th>
                   </tr>
@@ -681,16 +675,14 @@ export default function ClienteManagement() {
                       }`}
                       onClick={() => handleSelectUser(user)}
                     >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {user.cc}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="truncate px-3 py-3 text-gray-900">{user.cc}</td>
+                      <td className="truncate px-3 py-3 text-gray-900">
                         {user.nombre} {user.apellido}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-xs truncate">
+                      <td className="truncate px-3 py-3 text-gray-600" title={user.email}>
                         {user.email}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-3 py-3 text-gray-900">
                         <span
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full whitespace-nowrap ${
                             user.rol === "administrador"
@@ -727,9 +719,9 @@ export default function ClienteManagement() {
                             "N/A"}
                         </td>
                       )}
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-3 py-3">
                         <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full whitespace-nowrap ${
+                          className={`inline-flex px-2 py-0.5 text-xs font-semibold rounded-full ${
                             user.is_active
                               ? "bg-green-100 text-green-800"
                               : "bg-red-100 text-red-800"
@@ -738,8 +730,8 @@ export default function ClienteManagement() {
                           {user.is_active ? "Activo" : "Inactivo"}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex gap-1 whitespace-nowrap">
+                      <td className="px-2 py-3 text-right">
+                        <div className="inline-flex justify-end gap-0.5">
                           <ActionIconButton
                             variant="edit"
                             label="Editar usuario"
@@ -772,13 +764,9 @@ export default function ClienteManagement() {
               </div>
             )}
           </div>
-        </div>
+        </section>
 
-        {/* Right Panel - Detalles y formulario */}
-        <div
-          className="w-full lg:w-1/3 bg-white shadow-lg m-2 sm:m-4 lg:ml-0 rounded-lg overflow-hidden flex flex-col"
-          style={{ maxHeight: "calc(100vh - 200px)" }}
-        >
+        <aside className="flex min-h-[18rem] min-w-0 flex-col overflow-hidden rounded-xl border border-emerald-100 bg-white shadow-sm xl:sticky xl:top-4 xl:self-start">
           {showForm ? (
             // Formulario de edición/creación
             <div className="h-full flex flex-col">
@@ -788,11 +776,6 @@ export default function ClienteManagement() {
                     ? `Editar Usuario (ID: ${editingId})`
                     : "Crear Usuario"}
                 </h3>
-                {/* Debug info */}
-                <p className="text-xs text-gray-500 mt-1">
-                  Modo: {editingId ? "EDITAR" : "CREAR"} | Filtro:{" "}
-                  {currentRole} | User ID: {editingId || "N/A"}
-                </p>
               </div>
 
               <div className="flex-1 p-4 sm:p-6 overflow-auto">
@@ -1106,7 +1089,7 @@ export default function ClienteManagement() {
               </div>
             </div>
           )}
-        </div>
+        </aside>
       </div>
     </AdminPageLayout>
     </PageShell>
