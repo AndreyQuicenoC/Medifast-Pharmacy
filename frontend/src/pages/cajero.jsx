@@ -10,6 +10,9 @@ import {
   toggleCajaEstado,
   getProductos,
 } from "../api/cajero.api";
+import { notify } from "../utils/notify";
+import CajeroPageLayout from "../components/CajeroPageLayout";
+import { IconAdminUsuarios } from "../components/AdminModuleIcons";
 
 export default function Cajero() {
   const navigate = useNavigate();
@@ -47,20 +50,7 @@ export default function Cajero() {
           const cajaData = cajaInfo.caja;
           if (!cajaData) return "N/A";
 
-          // Debug: verificar si el backend envía el campo nombre
-          console.log("=== DEBUG NOMBRE CAJA ===");
-          console.log("cajaData completo:", cajaData);
-          console.log("cajaData.nombre:", cajaData.nombre);
-
-          // Usar el campo nombre directamente del backend
-          if (cajaData.nombre) {
-            return cajaData.nombre;
-          }
-
-          // Si no hay nombre, es un error del backend
-          console.error(
-            "ERROR: El backend no está enviando el campo 'nombre' de la caja"
-          );
+          if (cajaData.nombre) return cajaData.nombre;
           return `Caja ${cajaData.id || "?"}`;
         })(),
       }
@@ -135,22 +125,6 @@ export default function Cajero() {
       const data = await getMiCajaInfo();
       setCajaInfo(data);
 
-      // Debug: Mostrar la estructura de datos de la caja
-      console.log("Datos de caja recibidos:", data);
-      console.log("Información específica de caja:", data.caja);
-      console.log("Todos los campos de la caja:", Object.keys(data.caja || {}));
-      console.log("ID de la caja:", data.caja?.id);
-      console.log("Posibles nombres:", {
-        nombre: data.caja?.nombre,
-        Nombre: data.caja?.Nombre,
-        name: data.caja?.name,
-        Name: data.caja?.Name,
-        letra: data.caja?.letra,
-        Letra: data.caja?.Letra,
-        descripcion: data.caja?.descripcion,
-        Descripcion: data.caja?.Descripcion,
-      });
-
       // Actualizar cola de usuarios desde el backend
       if (data.cola_turnos) {
         setUsuariosCola(
@@ -210,8 +184,6 @@ export default function Cajero() {
   const cargarProductos = async () => {
     try {
       const productosData = await getProductos();
-      console.log("Productos recibidos:", productosData);
-      
       // Verificar que tenemos un array
       if (!Array.isArray(productosData)) {
         console.error("Los datos de productos recibidos no son un array:", productosData);
@@ -229,7 +201,7 @@ export default function Cajero() {
   // Atender siguiente usuario - integrado con backend
   const atenderSiguiente = async () => {
     if (!cajaActiva) {
-      alert("La caja debe estar activa para atender usuarios");
+      notify.error("La caja debe estar activa para atender usuarios");
       return;
     }
 
@@ -245,11 +217,11 @@ export default function Cajero() {
         setCarrito([]);
         setOrdenRecibida(false);
       } else {
-        alert(response.message || "No hay usuarios en cola para atender");
+        notify.info(response.message || "No hay usuarios en cola para atender");
       }
     } catch (error) {
       console.error("Error al atender siguiente:", error);
-      alert(error.response?.data?.error || "Error al atender siguiente turno");
+      notify.error(error.response?.data?.error || "Error al atender siguiente turno");
     }
   };
 
@@ -299,7 +271,7 @@ export default function Cajero() {
       setConfirmarCancelar(false);
     } catch (error) {
       console.error("Error al cancelar turno:", error);
-      alert(error.response?.data?.error || "Error al cancelar turno");
+      notify.error(error.response?.data?.error || "Error al cancelar turno");
     }
   };
 
@@ -310,24 +282,24 @@ export default function Cajero() {
 
       if (response.success) {
         await cargarDatosCaja(); // Recargar para actualizar el estado
-        alert(response.message);
+        notify.success(response.message);
       }
     } catch (error) {
       console.error("Error al cambiar estado de caja:", error);
-      alert(error.response?.data?.error || "Error al cambiar estado de caja");
+      notify.error(error.response?.data?.error || "Error al cambiar estado de caja");
     }
   };
 
   // Solicitar ayuda
   const pedirAyuda = () => {
-    alert("Se ha solicitado ayuda. Un supervisor acudirá pronto.");
+    notify.success("Ayuda solicitada. Un supervisor acudirá pronto.");
   };
 
   // Agregar producto al carrito
   const agregarProducto = (producto) => {
     if (producto.requiere_orden_medica && !ordenRecibida) {
-      alert(
-        "Este producto requiere orden médica. No puede ser vendido sin receta."
+      notify.error(
+        "Este producto requiere orden médica. No puede ser vendido sin receta.",
       );
       return;
     }
@@ -366,7 +338,7 @@ export default function Cajero() {
   // Generar factura y finalizar compra - integrado con backend
   const finalizarCompra = async () => {
     if (carrito.length === 0) {
-      alert("No hay productos en el carrito");
+      notify.error("No hay productos en el carrito");
       return;
     }
 
@@ -410,11 +382,11 @@ export default function Cajero() {
         // Recargar datos para actualizar el estado
         await cargarDatosCaja();
 
-        alert("Compra finalizada exitosamente. Se ha generado la factura.");
+        notify.success("Compra finalizada. Se generó la factura.");
       }
     } catch (error) {
       console.error("Error al finalizar compra:", error);
-      alert(error.response?.data?.error || "Error al finalizar la compra");
+      notify.error(error.response?.data?.error || "Error al finalizar la compra");
     }
   };
 
@@ -490,7 +462,7 @@ export default function Cajero() {
       console.log("Factura PDF generada exitosamente");
     } catch (error) {
       console.error("Error al generar PDF:", error);
-      alert("Error al generar la factura PDF");
+      notify.error("Error al generar la factura PDF");
     }
   };
 
@@ -508,7 +480,7 @@ export default function Cajero() {
       }, 500);
     } catch (error) {
       console.error("Error al pasar turno:", error);
-      alert(error.response?.data?.error || "Error al pasar al siguiente turno");
+      notify.error(error.response?.data?.error || "Error al pasar al siguiente turno");
     }
   };
 
@@ -559,10 +531,12 @@ export default function Cajero() {
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-6">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Sección Izquierda - Lista de usuarios en cola */}
-        <div className="lg:col-span-3 bg-white rounded-xl shadow p-4 md:p-6">
+    <CajeroPageLayout
+      title="Módulo de cajero"
+      subtitle={`${cajero.nombre} · ${cajero.caja}`}
+    >
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <div className="rounded-xl border border-emerald-100 bg-white/95 p-4 shadow-[var(--shadow-card)] lg:col-span-3 md:p-6">
           <h2 className="text-xl font-semibold mb-4 border-b pb-2">
             Usuarios en Cola
           </h2>
@@ -616,14 +590,14 @@ export default function Cajero() {
         </div>
 
         {/* Sección Central - Información de cajero y controles */}
-        <div className="lg:col-span-3 bg-white rounded-xl shadow p-4 md:p-6">
-          <h2 className="text-xl font-semibold mb-4 border-b pb-2">
-            Información de Cajero - Caja {cajero.caja}
+        <div className="rounded-xl border border-emerald-100 bg-white/95 p-4 shadow-[var(--shadow-card)] lg:col-span-3 md:p-6">
+          <h2 className="mb-4 border-b border-gray-100 pb-2 text-lg font-semibold">
+            Panel del cajero
           </h2>
           <div className="mb-6">
-            <div className="flex justify-center mb-4">
-              <div className="rounded-full bg-gray-200 h-24 w-24 flex items-center justify-center text-3xl">
-                👤
+            <div className="mb-4 flex justify-center">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100 text-emerald-800">
+                <IconAdminUsuarios className="h-10 w-10" />
               </div>
             </div>
             <p className="text-center font-medium text-lg">{cajero.nombre}</p>
@@ -992,6 +966,6 @@ export default function Cajero() {
           )}
         </div>
       </div>
-    </div>
+    </CajeroPageLayout>
   );
 }

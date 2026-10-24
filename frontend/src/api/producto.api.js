@@ -1,4 +1,6 @@
 import axios from "axios";
+import { getApiErrorMessage } from "../utils/apiError";
+import { extractList } from "./listUtils.js";
 
 // API URL constante
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
@@ -25,13 +27,13 @@ export const fetchProductos = async (authToken) => {
         Authorization: `Token ${authToken}`,
       },
     });
-    console.log("Respuesta de productos:", response.data);
-    // Manejar respuesta paginada del backend
-    const productos = response.data.results || response.data;
-    return { data: productos, error: null };
+    return { data: extractList(response.data), error: null };
   } catch (err) {
     console.error("Error al cargar productos:", err);
-    return { data: null, error: "No se pudieron cargar los productos" };
+    return {
+      data: null,
+      error: getApiErrorMessage(err, "No se pudieron cargar los productos"),
+    };
   }
 };
 
@@ -60,7 +62,7 @@ export const saveProducto = async (formData, editingId, token) => {
     return {
       success: false,
       data: null,
-      error: error.response?.data?.detail || error.message,
+      error: getApiErrorMessage(error, "No se pudo guardar el producto"),
     };
   }
 };
@@ -80,7 +82,10 @@ export const desactivarProducto = async (id, token) => {
     return { success: true, error: null };
   } catch (error) {
     console.error("Error al eliminar producto:", error);
-    return { success: false, error: "Error al desactivar el producto" };
+    return {
+      success: false,
+      error: getApiErrorMessage(error, "Error al desactivar el producto"),
+    };
   }
 };
 
@@ -99,7 +104,10 @@ export const activarProducto = async (id, token) => {
     return { success: true, error: null };
   } catch (error) {
     console.error("Error al activar producto:", error);
-    return { success: false, error: "Error al activar el producto" };
+    return {
+      success: false,
+      error: getApiErrorMessage(error, "Error al activar el producto"),
+    };
   }
 };
 

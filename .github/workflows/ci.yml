@@ -1,0 +1,85 @@
+name: CI Medifast Pharmacy
+
+on:
+  push:
+    branches: [develop, main, "feat/**"]
+  pull_request:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+
+jobs:
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Instalar gitleaks
+        run: |
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.21.2/gitleaks_8.21.2_linux_x64.tar.gz | tar xz
+          sudo install gitleaks /usr/local/bin/gitleaks
+      - name: Escanear arbol de trabajo (sin historial Git)
+        run: gitleaks detect --no-git --config .gitleaks.toml -i .gitleaksignore --redact --verbose
+
+  backend:
+    needs: secrets
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+      - name: Configurar entorno de prueba
+        run: |
+          cp .env.example .env
+          echo "SECRET_KEY=ci-test-only-not-for-production" >> .env
+          echo "USE_SQLITE=True" >> .env
+          echo "DEBUG=True" >> .env
+      - name: Lint (ruff)
+        run: |
+          ruff check apps config tests scripts/deploy scripts/setup
+          ruff format --check apps config tests scripts/deploy scripts/setup
+      - name: Django check y migraciones
+        run: |
+          python manage.py check
+          python manage.py migrate --noinput
+      - name: Tests y cobertura
+        run: pytest --cov=apps --cov=config --cov-report=term-missing --cov-fail-under=68
+      - name: Seguridad (bandit + pip-audit)
+        run: |
+          bandit -r apps config -c pyproject.toml -x apps/operations/views.py -x apps/identity/views.py -x apps/operations/estadisticas_views.py
+          pip-audit -r requirements.txt
+      - name: Complejidad (radon)
+        run: radon cc apps config -a -nb --total-average
+      - name: Documentacion (interrogate)
+        run: interrogate apps config -c pyproject.toml
+
+  frontend:
+    needs: secrets
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test
+      - run: npm run build
+      - name: npm audit (alta severidad)
+        run: npm audit --audit-level=high
+      - name: Instalar navegadores Playwright
+        run: npx playwright install chromium --with-deps
+      - run: npm run test:e2e

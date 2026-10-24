@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import medifastLogo from "../assets/medifast_logo.png";
+import { notify } from "../utils/notify";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -33,13 +34,13 @@ export default function Register() {
 
     // Validaciones básicas
     if (formData.password !== formData.confirmPassword) {
-      alert("Las contraseñas no coinciden");
+      notify.error("Las contraseñas no coinciden");
       setLoading(false);
       return;
     }
 
     if (formData.password.length < 6) {
-      alert("La contraseña debe tener al menos 6 caracteres");
+      notify.error("La contraseña debe tener al menos 6 caracteres");
       setLoading(false);
       return;
     }
@@ -52,7 +53,7 @@ export default function Register() {
       !formData.phone_number ||
       !formData.dob
     ) {
-      alert("Todos los campos son obligatorios");
+      notify.error("Todos los campos son obligatorios");
       setLoading(false);
       return;
     }
@@ -60,14 +61,14 @@ export default function Register() {
     // Validar formato de teléfono
     const phoneRegex = /^[36]\d{9}$/;
     if (!phoneRegex.test(formData.phone_number)) {
-      alert("El número de teléfono debe empezar con 3 o 6 y tener 10 dígitos");
+      notify.error("El número de teléfono debe empezar con 3 o 6 y tener 10 dígitos");
       setLoading(false);
       return;
     }
 
     // Validar cédula
     if (formData.cc.length < 6 || formData.cc.length > 10) {
-      alert("La cédula debe tener entre 6 y 10 dígitos");
+      notify.error("La cédula debe tener entre 6 y 10 dígitos");
       setLoading(false);
       return;
     }
@@ -91,7 +92,7 @@ export default function Register() {
       });
 
       if (response.status === 201) {
-        alert("Registro exitoso. Ahora puedes iniciar sesión.");
+        notify.success("Registro exitoso. Ahora puedes iniciar sesión.");
         navigate("/login");
       }
     } catch (error) {
@@ -123,7 +124,7 @@ export default function Register() {
           error.response?.data?.detail || error.message || "Error desconocido";
       }
 
-      alert(errorMessage);
+      notify.error(errorMessage);
     } finally {
       setLoading(false);
     }

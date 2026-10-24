@@ -24,3 +24,24 @@
 ---
 
 *(Epic completo: PROMPT MAESTRO — Modernización integral de Farmacia Django + React mediante VEXARQ, recibido íntegramente en la solicitud de implementación del workflow user-story-implementation. Alcance autorizado en esta ejecución: secciones 5, 6 y 25 — Fase 0 y Fase 1 únicamente.)*
+
+---
+
+## MOD-EPIC — Modernización integral (Fases 2+)
+
+**As** responsable del portafolio Medifast  
+**I want** continuar el PROMPT MAESTRO desde `develop` en rama `feat/modernizacion-integral-farmacia`  
+**So that** el proyecto cumpla requisitos de arquitectura, calidad, seguridad, accesibilidad, pruebas, CI/CD y documentación profesional
+
+### Acceptance criteria (oleada 1 — en progreso)
+
+1. Rama de trabajo desde `develop` verificada.
+2. Artefactos Fase 3: SAD, requisitos, backlog, ADR, design.md.
+3. CI GitHub Actions backend + frontend.
+4. Handler de errores API y prueba asociada.
+5. Comando `seed_dev_users` documentado.
+6. UX: 404, atajos, tokens CSS, página /proyecto.
+7. README, CHANGELOG, SECURITY, LICENSE raíz.
+
+**Received:** 2026-10-23  
+**Status:** IN_PROGRESS

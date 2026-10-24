@@ -3,11 +3,14 @@
 
 echo "=== Test de APIs de Caja con curl ==="
 
+: "${MEDIFAST_TEST_CC:?Defina MEDIFAST_TEST_CC}"
+: "${MEDIFAST_TEST_PASSWORD:?Defina MEDIFAST_TEST_PASSWORD}"
+
 # Primero hacer login para obtener el token
 echo "1. Haciendo login para obtener token..."
 LOGIN_RESPONSE=$(curl -s -X POST http://127.0.0.1:8000/api/login/ \
   -H "Content-Type: application/json" \
-  -d '{"cc": "123456789", "password": "admin123"}')
+  -d "{\"cc\": \"${MEDIFAST_TEST_CC}\", \"password\": \"${MEDIFAST_TEST_PASSWORD}\"}")
 
 echo "Login response: $LOGIN_RESPONSE"
 

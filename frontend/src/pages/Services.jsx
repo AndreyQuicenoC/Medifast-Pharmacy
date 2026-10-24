@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Button from "../components/Button";
+import { PageShell } from "../components/PageState";
 import { useNavigate } from "react-router-dom";
 import {
   GetAllServicios,
@@ -9,9 +10,16 @@ import {
   ActivateServicio,
   DeleteServicioPermanent,
 } from "../api/servicio.api";
+import { useConfirm } from "../components/ConfirmProvider";
+import { notify } from "../utils/notify";
+import AdminPageLayout from "../components/AdminPageLayout";
+import ActionIconButton from "../components/ActionIconButton";
+import Tooltip from "../components/Tooltip";
+import { IconService } from "../components/icons";
 
 export default function ServicioEditor() {
   const navigate = useNavigate();
+  const confirm = useConfirm();
   const [authorized, setAuthorized] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showInactive, setShowInactive] = useState(false); // Estado para mostrar/ocultar servicios inactivos
@@ -53,7 +61,6 @@ export default function ServicioEditor() {
     try {
       setLoading(true);
       const serviciosData = await GetAllServicios();
-      console.log("Datos de servicios recibidos:", serviciosData);
 
       // Verificar que tenemos un array
       if (!Array.isArray(serviciosData)) {
@@ -132,11 +139,11 @@ export default function ServicioEditor() {
       if (editingId) {
         // Actualizar servicio existente
         await UpdateServicio(editingId, formData);
-        alert("Servicio actualizado con éxito");
+        notify.success("Servicio actualizado con éxito");
       } else {
         // Crear nuevo servicio
         await CreateServicio(formData);
-        alert("Servicio creado con éxito");
+        notify.success("Servicio creado con éxito");
       }
       // Recargar datos
       fetchServicios();
@@ -145,59 +152,70 @@ export default function ServicioEditor() {
       setEditingId(null);
     } catch (error) {
       console.error("Error al guardar servicio:", error);
-      alert(
+      notify.error(
         `Error al guardar el servicio: ${
           error.response?.data?.detail || error.message
-        }`
+        }`,
       );
     }
   };
 
   // Desactivar servicio
   const handleDeactivate = async (id) => {
-    if (window.confirm("¿Está seguro que desea desactivar este servicio?")) {
-      try {
-        await DeactivateServicio(id);
-        fetchServicios();
-        alert("Servicio desactivado con éxito");
-      } catch (error) {
-        console.error("Error al desactivar servicio:", error);
-        alert("Error al desactivar el servicio");
-      }
+    const ok = await confirm({
+      title: "Desactivar servicio",
+      message: "¿Desea desactivar este servicio?",
+      confirmLabel: "Desactivar",
+      destructive: true,
+    });
+    if (!ok) return;
+    try {
+      await DeactivateServicio(id);
+      fetchServicios();
+      notify.success("Servicio desactivado con éxito");
+    } catch (error) {
+      console.error("Error al desactivar servicio:", error);
+      notify.error("Error al desactivar el servicio");
     }
   };
 
-  // Activar servicio
   const handleActivate = async (id) => {
-    if (window.confirm("¿Está seguro que desea activar este servicio?")) {
-      try {
-        await ActivateServicio(id);
-        fetchServicios();
-        alert("Servicio activado con éxito");
-      } catch (error) {
-        console.error("Error al activar servicio:", error);
-        alert("Error al activar el servicio");
-      }
+    const ok = await confirm({
+      title: "Activar servicio",
+      message: "¿Desea activar este servicio nuevamente?",
+      confirmLabel: "Activar",
+    });
+    if (!ok) return;
+    try {
+      await ActivateServicio(id);
+      fetchServicios();
+      notify.success("Servicio activado con éxito");
+    } catch (error) {
+      console.error("Error al activar servicio:", error);
+      notify.error("Error al activar el servicio");
     }
   };
 
-  // Eliminar servicio permanentemente
   const handleDelete = async (id) => {
-    if (window.confirm("¿Está seguro que desea eliminar este servicio?")) {
-      try {
-        await DeleteServicioPermanent(id);
-        fetchServicios();
-        alert("Servicio eliminado con éxito");
-        // Si el servicio eliminado era el seleccionado, deseleccionarlo
-        if (selectedServicio && selectedServicio.id === id) {
-          setSelectedServicio(null);
-        }
-      } catch (error) {
-        console.error("Error al eliminar servicio:", error);
-        alert(
-          "Error al eliminar el servicio. Puede que existan registros relacionados que impidan su eliminación."
-        );
+    const ok = await confirm({
+      title: "Eliminar servicio",
+      message: "Esta acción es permanente. ¿Continuar?",
+      confirmLabel: "Eliminar",
+      destructive: true,
+    });
+    if (!ok) return;
+    try {
+      await DeleteServicioPermanent(id);
+      fetchServicios();
+      notify.success("Servicio eliminado con éxito");
+      if (selectedServicio && selectedServicio.id === id) {
+        setSelectedServicio(null);
       }
+    } catch (error) {
+      console.error("Error al eliminar servicio:", error);
+      notify.error(
+        "Error al eliminar el servicio. Puede que existan registros relacionados.",
+      );
     }
   };
 
@@ -211,10 +229,6 @@ export default function ServicioEditor() {
     ? servicios
     : servicios.filter((servicio) => servicio.estado);
 
-  if (loading)
-    return <div className="text-center mt-8">Cargando servicios...</div>;
-  if (error)
-    return <div className="text-center mt-8 text-red-500">{error}</div>;
   if (!authorized)
     return (
       <p className="text-center mt-8">
@@ -223,138 +237,127 @@ export default function ServicioEditor() {
     );
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
-      {/* Contenedor principal con diseño responsive de 2 columnas */}
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Columna izquierda - Lista de servicios */}
-        <div className="flex-1 bg-white rounded-xl shadow p-4 md:p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold">Gestión de Servicios</h2>
-            <div className="flex gap-2">
-              <Button
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg"
-                onClick={handleShowCreateForm}
-              >
-                Nuevo Servicio
-              </Button>
-              <Button
-                className={`px-4 py-2 ${
-                  showInactive
-                    ? "bg-purple-600 hover:bg-purple-700"
-                    : "bg-yellow-600 hover:bg-yellow-700"
-                } text-white rounded-lg`}
-                onClick={() => setShowInactive(!showInactive)}
-              >
-                {showInactive ? "Ocultar inactivos" : "Mostrar inactivos"}
-              </Button>
-            </div>
-          </div>
+    <PageShell
+      loading={loading}
+      error={error}
+      onRetry={fetchServicios}
+      loadingMessage="Cargando servicios..."
+    >
+    <AdminPageLayout
+      title="Gestión de servicios"
+      subtitle="Catálogo de atención en mostrador y consultorio"
+      action={
+        <div className="flex flex-wrap gap-2">
+          <Tooltip label="Registrar un nuevo servicio">
+            <Button className="btn-primary min-h-[2.75rem] px-4 py-2.5 text-sm" onClick={handleShowCreateForm}>
+              Nuevo servicio
+            </Button>
+          </Tooltip>
+          <Tooltip label={showInactive ? "Ocultar servicios inactivos" : "Ver servicios inactivos"}>
+            <Button
+              className={`min-h-[2.75rem] rounded-lg px-4 py-2.5 text-sm font-semibold text-white ${
+                showInactive ? "bg-violet-700 hover:bg-violet-800" : "bg-amber-600 hover:bg-amber-700"
+              }`}
+              onClick={() => setShowInactive(!showInactive)}
+            >
+              {showInactive ? "Ocultar inactivos" : "Mostrar inactivos"}
+            </Button>
+          </Tooltip>
+        </div>
+      }
+    >
+      <div className="flex flex-col gap-6 lg:flex-row">
+        <div className="flex-1">
 
-          {/* Lista de servicios */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {serviciosFiltrados.length === 0 ? (
-              <p className="col-span-full text-center text-gray-500 py-8">
+              <p className="col-span-full py-10 text-center text-[var(--color-text-muted)]">
                 No hay servicios disponibles
               </p>
             ) : (
               serviciosFiltrados.map((servicio) => (
-                <div
+                <article
                   key={servicio.id}
-                  className={`flex flex-col p-5 border rounded-lg shadow-sm min-h-[240px] 
-                    ${
-                      selectedServicio?.id === servicio.id
-                        ? "bg-green-50 border-green-500"
-                        : ""
-                    }
-                    ${
-                      !servicio.estado
-                        ? "opacity-70 border-dashed border-gray-400"
-                        : ""
-                    }`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleSelectServicio(servicio)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSelectServicio(servicio)}
+                  className={`flex cursor-pointer flex-col rounded-xl border p-4 shadow-sm transition hover:shadow-md ${
+                    selectedServicio?.id === servicio.id
+                      ? "border-emerald-500 bg-emerald-50/80"
+                      : "border-gray-200 bg-white"
+                  } ${!servicio.estado ? "border-dashed opacity-75" : ""}`}
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <Button
-                      className="flex-1 px-2 py-1 bg-zinc-400 hover:bg-slate-500 text-sm text-white rounded-lg"
-                      onClick={() => {
-                        handleSelectServicio(servicio);
-                      }}
-                    >
-                      {servicio.etiqueta}
-                    </Button>
-                    {!servicio.estado && (
-                      <span className="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                  <div className="mb-2 flex items-start justify-between gap-2">
+                    <div className="flex min-w-0 items-start gap-2">
+                      <span className="mt-0.5 text-emerald-700">
+                        <IconService name={servicio.etiqueta} className="h-6 w-6" />
+                      </span>
+                      <h3 className="font-semibold leading-snug text-[var(--color-text)]">
+                        {servicio.etiqueta}
+                      </h3>
+                    </div>
+                    {!servicio.estado ? (
+                      <span className="shrink-0 rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-800">
                         Inactivo
                       </span>
-                    )}
+                    ) : null}
                   </div>
 
-                  <p className="text-lg text-gray-600 flex-grow my-4 line-clamp-3">
+                  <p className="mb-3 line-clamp-3 flex-grow text-sm text-[var(--color-text-muted)]">
                     {servicio.descripcion}
                   </p>
 
-                  <div className="mt-auto w-full">
-                    <div className="mb-3">
-                      <span
-                        className={`inline-block text-xs ${
-                          servicio.prioridad
-                            ? "bg-red-200 text-red-700"
-                            : "bg-gray-200 text-gray-600"
-                        } px-2 py-1 rounded-full`}
-                      >
-                        {servicio.prioridad
-                          ? "Prioridad Alta"
-                          : "Prioridad Normal"}
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2 w-full">
-                      <Button
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 py-2 rounded-md w-full flex justify-center items-center"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleShowEditForm(servicio);
-                        }}
-                      >
-                        Editar
-                      </Button>
-
-                      {servicio.estado ? (
-                        <Button
-                          className="bg-orange-500 hover:bg-orange-600 text-white text-xs px-2 py-2 rounded-md w-full flex justify-center items-center"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeactivate(servicio.id);
-                          }}
-                        >
-                          Desactivar
-                        </Button>
-                      ) : (
-                        <Button
-                          className="bg-green-600 hover:bg-green-700 text-white text-xs px-2 py-2 rounded-md w-full flex justify-center items-center"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleActivate(servicio.id);
-                          }}
-                        >
-                          Activar
-                        </Button>
-                      )}
-                    </div>
-
-                    {/* Botón de eliminación permanente */}
-                    <div className="mt-2 w-full">
-                      <Button
-                        className="bg-red-700 hover:bg-red-800 text-white text-xs px-2 py-2 rounded-md w-full flex justify-center items-center"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(servicio.id);
-                        }}
-                      >
-                        Eliminar
-                      </Button>
-                    </div>
+                  <div className="mb-3 flex flex-wrap gap-1.5">
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                        servicio.prioridad
+                          ? "bg-red-100 text-red-800"
+                          : "bg-sky-100 text-sky-800"
+                      }`}
+                    >
+                      {servicio.prioridad ? "Prioridad alta" : "Prioridad normal"}
+                    </span>
                   </div>
-                </div>
+
+                  <div className="mt-auto flex items-center justify-end gap-1.5 border-t border-gray-100 pt-3">
+                    <ActionIconButton
+                      variant="edit"
+                      label="Editar servicio"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleShowEditForm(servicio);
+                      }}
+                    />
+                    {servicio.estado ? (
+                      <ActionIconButton
+                        variant="deactivate"
+                        label="Desactivar servicio"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeactivate(servicio.id);
+                        }}
+                      />
+                    ) : (
+                      <ActionIconButton
+                        variant="activate"
+                        label="Activar servicio"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleActivate(servicio.id);
+                        }}
+                      />
+                    )}
+                    <ActionIconButton
+                      variant="delete"
+                      label="Eliminar servicio"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(servicio.id);
+                      }}
+                    />
+                  </div>
+                </article>
               ))
             )}
           </div>
@@ -485,36 +488,30 @@ export default function ServicioEditor() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 w-full mt-2">
-                    <Button
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+                  <div className="mt-4 flex flex-wrap justify-end gap-1.5 border-t border-gray-100 pt-4">
+                    <ActionIconButton
+                      variant="edit"
+                      label="Editar servicio"
                       onClick={() => handleShowEditForm(selectedServicio)}
-                    >
-                      Editar Servicio
-                    </Button>
-
+                    />
                     {selectedServicio.estado ? (
-                      <Button
-                        className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md"
+                      <ActionIconButton
+                        variant="deactivate"
+                        label="Desactivar servicio"
                         onClick={() => handleDeactivate(selectedServicio.id)}
-                      >
-                        Desactivar
-                      </Button>
+                      />
                     ) : (
-                      <Button
-                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
+                      <ActionIconButton
+                        variant="activate"
+                        label="Activar servicio"
                         onClick={() => handleActivate(selectedServicio.id)}
-                      >
-                        Activar
-                      </Button>
+                      />
                     )}
-
-                    <Button
-                      className="col-span-2 bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-md mt-2"
+                    <ActionIconButton
+                      variant="delete"
+                      label="Eliminar servicio"
                       onClick={() => handleDelete(selectedServicio.id)}
-                    >
-                      Eliminar
-                    </Button>
+                    />
                   </div>
                 </div>
               )
@@ -522,6 +519,7 @@ export default function ServicioEditor() {
           </div>
         )}
       </div>
-    </div>
+    </AdminPageLayout>
+    </PageShell>
   );
 }

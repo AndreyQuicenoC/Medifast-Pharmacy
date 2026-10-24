@@ -16,7 +16,7 @@ if (-not (Test-Path ".venv")) {
 .\.venv\Scripts\pip install -q -r requirements.txt
 .\.venv\Scripts\python manage.py check
 .\.venv\Scripts\python manage.py migrate --noinput
-.\.venv\Scripts\python manage.py test apps.users.tests.test_settings_smoke
+.\.venv\Scripts\python manage.py test apps.identity.tests.test_settings_smoke
 
 Write-Host "Frontend: lint y build..."
 Set-Location "$Root\frontend"

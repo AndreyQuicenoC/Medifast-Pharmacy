@@ -13,6 +13,9 @@ import {
   cancelarTurno,
   getTurnoActualGlobal,
 } from "../api/turno.api";
+import { useConfirm } from "../components/ConfirmProvider";
+import { notify } from "../utils/notify";
+import Tooltip from "../components/Tooltip";
 
 const images = [
   imgPR_ViernesPastillaton,
@@ -40,6 +43,7 @@ const messages = [
 
 export default function Turno() {
   const navigate = useNavigate();
+  const confirm = useConfirm();
 
   const [imageIndex, setImageIndex] = useState(0);
   const [messageIndex, setMessageIndex] = useState(0);
@@ -213,7 +217,7 @@ export default function Turno() {
     }
 
     if (!cedula) {
-      alert("Error: No se pudo obtener información del usuario");
+      notify.error("Error: No se pudo obtener información del usuario");
       navigate("/");
       return;
     }
@@ -304,19 +308,20 @@ export default function Turno() {
   const handleCancelarTurno = async () => {
     if (!turnoCliente) return;
 
-    const confirmacion = window.confirm(
-      "¿Estás seguro de que deseas cancelar tu turno? Esta acción no se puede deshacer."
-    );
-
-    if (confirmacion) {
-      try {
-        await cancelarTurno(turnoCliente.id);
-        alert("Turno cancelado exitosamente");
-        navigate("/pedir-turno");
-      } catch (error) {
-        alert("Error al cancelar el turno. Intenta nuevamente.");
-        console.error("Error:", error);
-      }
+    const ok = await confirm({
+      title: "Cancelar turno",
+      message: "¿Estás seguro? Esta acción no se puede deshacer.",
+      confirmLabel: "Cancelar turno",
+      destructive: true,
+    });
+    if (!ok) return;
+    try {
+      await cancelarTurno(turnoCliente.id);
+      notify.success("Turno cancelado exitosamente");
+      navigate("/pedir-turno");
+    } catch (error) {
+      notify.error("Error al cancelar el turno. Intenta nuevamente.");
+      console.error("Error:", error);
     }
   };
 
@@ -362,15 +367,21 @@ export default function Turno() {
   };
 
   return (
-    <div className="w-full h-full flex items-center justify-center">
-      <div className="w-full max-w-7xl mx-auto h-auto bg-white shadow-lg rounded-lg p-6">
-        {/* Información del Cliente */}
+    <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 md:px-6 md:py-10">
+      <div className="overflow-hidden rounded-2xl border border-emerald-100 bg-white/95 shadow-[var(--shadow-card)]">
+        <div className="border-b border-emerald-100 bg-gradient-to-r from-emerald-50/90 to-white px-5 py-4 md:px-6">
+          <h1 className="text-xl font-bold text-[var(--color-text)] md:text-2xl">Tu turno en Medifast</h1>
+          <p className="text-sm text-[var(--color-text-muted)]">
+            Sigue el avance de la cola y la atención en mostrador en tiempo real
+          </p>
+        </div>
+        <div className="p-5 md:p-6 lg:p-8">
         {clienteInfo && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <div className="mb-6 rounded-xl border border-sky-200 bg-sky-50/80 p-4">
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="font-semibold text-blue-800">
-                  👤 Bienvenido, {clienteInfo.nombre} {clienteInfo.apellido}
+                  Bienvenido, {clienteInfo.nombre} {clienteInfo.apellido}
                 </h3>
                 <p className="text-sm text-blue-600">CC: {clienteInfo.cedula}</p>
               </div>
@@ -389,8 +400,7 @@ export default function Turno() {
           </div>
         )}
 
-        {/* Turno Siguiente Section */}
-        <div className="bg-green-600 rounded-2xl flex flex-col justify-center items-center py-8 mb-4">
+        <div className="mb-6 flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 py-10 shadow-inner">
           <h2 className="text-4xl font-bold text-white">
             {turnoActualCaja
               ? `Turno Actual - Caja ${
@@ -412,8 +422,8 @@ export default function Turno() {
                 Servicio: {turnoActualCaja.servicio || "N/A"}
               </p>
               {turnoActualCaja.es_prioritario && (
-                <span className="bg-red-200 text-red-800 px-3 py-1 rounded-full text-sm font-medium mt-2 inline-block">
-                  🚨 Prioritario
+                <span className="mt-2 inline-block rounded-full bg-red-200 px-3 py-1 text-sm font-medium text-red-800">
+                  Atención prioritaria
                 </span>
               )}
             </div>
@@ -434,8 +444,10 @@ export default function Turno() {
             </span>
           </div>
           <div className="flex flex-col md:flex-row gap-4 md:w-auto w-full">
+            <Tooltip label="Actualizar estado de tu turno">
             <button
-              className="flex-1 border border-green-600 text-green-600 rounded-full py-4 px-6 font-bold hover:bg-green-200 transition duration-300 flex items-center justify-center space-x-2"
+              type="button"
+              className="flex flex-1 items-center justify-center space-x-2 rounded-full border border-emerald-600 px-6 py-3.5 font-semibold text-emerald-700 transition hover:bg-emerald-50"
               onClick={() => actualizarManual(clienteInfo?.cedula)}
               disabled={actualizandoManual}
             >
@@ -448,13 +460,17 @@ export default function Turno() {
                 <span>Actualizar información</span>
               )}
             </button>
+            </Tooltip>
+            <Tooltip label="Cancelar turno mientras estés en espera">
             <button
-              className="flex-1 border border-orange-600 bg-orange-600 text-white rounded-full py-4 px-6 font-bold hover:bg-orange-800 transition duration-300"
+              type="button"
+              className="flex-1 rounded-full border border-amber-600 bg-amber-600 px-6 py-3.5 font-semibold text-white transition hover:bg-amber-700 disabled:opacity-50"
               onClick={handleCancelarTurno}
               disabled={!turnoCliente || turnoCliente.estado !== "esperando"}
             >
               Cancelar turno
             </button>
+            </Tooltip>
           </div>
         </div>
 
@@ -517,8 +533,8 @@ export default function Turno() {
                     {turnoCliente.ID_Caja_data.usuario.last_name}
                   </p>
                 )}
-                <p className="text-xs text-gray-500 mt-1">
-                  ✨ Asignada automáticamente por nuestro sistema inteligente
+                <p className="mt-1 text-xs text-gray-500">
+                  Asignada automáticamente según disponibilidad de cajas
                 </p>
               </div>
             ) : (
@@ -568,22 +584,20 @@ export default function Turno() {
                       </span>
                     </div>
 
-                    <p className="text-sm text-gray-600 mb-1">
-                      📋 {caja.turnos_en_espera} turnos en espera
+                    <p className="mb-1 text-sm text-gray-600">
+                      {caja.turnos_en_espera} turnos en espera
                     </p>
 
                     {caja.turno_actual ? (
                       <div className="text-sm">
-                        <p className="text-blue-600 font-medium">
-                          🔄 Atendiendo turno #{caja.turno_actual.numero_turno}
+                        <p className="font-medium text-blue-600">
+                          Atendiendo turno #{caja.turno_actual.numero_turno}
                         </p>
                         <p className="text-gray-600">
-                          👤 {caja.turno_actual.cliente.nombre}{" "}
+                          {caja.turno_actual.cliente.nombre}{" "}
                           {caja.turno_actual.cliente.apellido}
                         </p>
-                        <p className="text-gray-600">
-                          🏥 {caja.turno_actual.servicio}
-                        </p>
+                        <p className="text-gray-600">{caja.turno_actual.servicio}</p>
                         {caja.turno_actual.hora_inicio_atencion && (
                           <p className="text-gray-500 text-xs">
                             Desde:{" "}
@@ -600,8 +614,8 @@ export default function Turno() {
                     )}
 
                     {turnoCliente?.ID_Caja_data?.id === caja.id && (
-                      <p className="text-xs text-green-600 font-medium mt-1">
-                        ⭐ Tu caja asignada
+                      <p className="mt-1 text-xs font-medium text-emerald-600">
+                        Tu caja asignada
                       </p>
                     )}
                   </div>
@@ -610,8 +624,8 @@ export default function Turno() {
 
               {/* Explicación del algoritmo */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h5 className="font-semibold text-blue-800 mb-2">
-                  🤖 ¿Cómo funciona la asignación automática?
+                <h5 className="mb-2 font-semibold text-blue-800">
+                  ¿Cómo funciona la asignación automática?
                 </h5>
                 <ul className="text-sm text-blue-700 space-y-1">
                   <li>
@@ -710,7 +724,8 @@ export default function Turno() {
             ></iframe>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </main>
   );
 }
